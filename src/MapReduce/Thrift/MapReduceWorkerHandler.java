@@ -1,4 +1,4 @@
-package JavaWorker;
+package MapReduce.Thrift;
 import MapReduce.Thrift.ClientListeningInfo;
 import MapReduce.Thrift.KeyValueEntity;
 import MapReduce.Thrift.MapReduceWorker;

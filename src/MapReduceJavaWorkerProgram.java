@@ -1,4 +1,4 @@
-import MapReduce.Thrift.JavaWorker.JavaWorker;
+import JavaWorker.JavaWorker;
 import Multicast.MulticastReceiver;
 
 /**
@@ -17,7 +17,7 @@ public class MapReduceJavaWorkerProgram {
         // run worker
         if(multicastReceiver.isMasterReady()){
             JavaWorker worker = new JavaWorker();
-            worker.main();
+            worker.start();
         }
 
 

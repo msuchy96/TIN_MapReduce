@@ -1,7 +1,8 @@
-package MapReduce.Thrift.JavaWorker;
+package JavaWorker;
 
 import MapReduce.Thrift.MapReduceMaster;
 import MapReduce.Thrift.MapReduceWorker;
+import MapReduce.Thrift.MapReduceWorkerHandler;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -25,7 +26,8 @@ import java.util.concurrent.Future;
  * Created by suchy on 28.05.2018.
  */
 public class JavaWorker {
-    public int port = 9090 + new Random().nextInt() % 200;
+    private int port = 9090 + new Random().nextInt() % 200;
+    private static final String IPV4 = "192.168.0.123";
 
     public void start(){
         // creates fixed thread pool
@@ -56,7 +58,8 @@ public class JavaWorker {
                 MapReduceWorkerHandler handler = new MapReduceWorkerHandler();
                 MapReduceWorker.Processor processor = new MapReduceWorker.Processor(handler);
 
-                TServerTransport serverTransport = new TServerSocket(new ServerSocket(port,50 , InetAddress.getByName("192.168.0.123")));
+                //MY IP
+                TServerTransport serverTransport = new TServerSocket(new ServerSocket(port,50 , InetAddress.getByName(IPV4)));
                 TServer server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(processor));
 
 
@@ -99,7 +102,7 @@ public class JavaWorker {
                 try{
                     System.out.println("Register...");
                     System.in.read();
-                    client.RegisterWorker(ByteBuffer.wrap(IPAddressUtil.textToNumericFormatV4("192.168.0.123")).getInt(),port);
+                    client.RegisterWorker(ByteBuffer.wrap(IPAddressUtil.textToNumericFormatV4(IPV4)).getInt(),port);
                     System.out.println("Finish Map");
                     System.in.read();
                     client.FinishedMap();
