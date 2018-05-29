@@ -27,7 +27,7 @@ import java.util.concurrent.Future;
 public class JavaWorker {
     public int port = 9090 + new Random().nextInt() % 200;
 
-    public void main(){
+    public void start(){
         // creates fixed thread pool
         final ExecutorService es = Executors.newFixedThreadPool(2);
         // server callable thread starts to execute
@@ -88,10 +88,10 @@ public class JavaWorker {
                 MapReduceMaster.Client client = new MapReduceMaster.Client(protocol);
 
                 try{
-                    System.out.println("Trying to open client...");
+                    System.out.println("Trying to open connection...");
                     transport.open();
                 } catch (TException x) {
-                    System.out.println("Exception occurred: Unable to open client!");
+                    System.out.println("Exception occurred: Unable to open connection!");
                     x.printStackTrace();
                     return false;
                 }
