@@ -72,7 +72,7 @@ public class PythonRunner {
                 synchronized (registerWorkersQueueWrapper){
                     registerWorkersQueueWrapper.put(new Pair<>(resultPair[0],Integer.valueOf(resultPair[1])));
                     if(!reader.ready()){
-                        registerWorkersQueueWrapper.setIsEnd(true);
+                        registerWorkersQueueWrapper.setEnd(true);
                     }
                 }
             }

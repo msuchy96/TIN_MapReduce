@@ -12,26 +12,26 @@ public class RegisterWorkersQueueWrapper {
 
     private BlockingQueue<Pair<String,Integer>> registerWorkersQueue;
     private Integer numberOfWorkers;
-    private Boolean isEnd;
+    private Boolean end;
 
     public RegisterWorkersQueueWrapper(){
-        isEnd = false;
+        end = false;
         numberOfWorkers = 100;
         registerWorkersQueue = new ArrayBlockingQueue<>(numberOfWorkers);
     }
 
     public RegisterWorkersQueueWrapper(Integer numberOfWorkers){
-        isEnd = false;
+        end = false;
         this.numberOfWorkers = numberOfWorkers;
         registerWorkersQueue = new ArrayBlockingQueue<>(numberOfWorkers);
     }
 
-    public synchronized void setIsEnd(Boolean isEnd){
-        this.isEnd = isEnd;
+    public synchronized void setEnd(Boolean end){
+        this.end = end;
     }
 
-    public synchronized Boolean getIsEnd(){
-        return isEnd;
+    public synchronized Boolean IsEnd(){
+        return end;
     }
 
     public synchronized void put(Pair<String,Integer> pair) throws InterruptedException{
