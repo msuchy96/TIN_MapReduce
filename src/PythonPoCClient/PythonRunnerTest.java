@@ -6,7 +6,7 @@ package PythonPoCClient;
 public class PythonRunnerTest {
 
     public static void main(String[] args){
-        PythonRunner pyRunner = new PythonRunner();
+        PythonRunner pyRunner = new PythonRunner("dane.txt","map.py","reduce.py");
         pyRunner.map();
         try {
             System.in.read();

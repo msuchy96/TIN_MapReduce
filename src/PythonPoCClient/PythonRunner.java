@@ -1,41 +1,38 @@
 package PythonPoCClient;
 
+import JavaWorker.RegisterWorkersQueueWrapper;
 import org.apache.commons.lang3.Pair;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.BlockingQueue;
 
 
 /**
  * Created by suchy on 29.05.2018.
  */
 public class PythonRunner {
+    private static String pythonPath = "C:/Python27/python.exe";
+    private static String sourceFilePath = "G:/ProjektyELKA/TIN/src/PythonPoCClient/sources/";
 
 
-    private static String pythonPath = " C:/Python27/python.exe";
-    private static String dataFile;
+    private static String dataFilePath;
     private static String pythonMapPath;
     private static String pythonReducePath;
     public ArrayList<Pair<String,Integer>> mapResults;
 
-
+    public ArrayList<Pair<String,Integer>> getMapResults(){
+        return mapResults;
+    }
 
     public PythonRunner(String dataFile, String mapFile, String reduceFile){
-        this.dataFile = dataFile;
-        this.pythonMapPath = mapFile;
-        this.pythonReducePath = reduceFile;
+        dataFilePath = sourceFilePath + dataFile;
+        pythonMapPath = sourceFilePath + mapFile;
+        pythonReducePath = sourceFilePath + reduceFile;
     }
 
-    public PythonRunner(){
-        this.dataFile = "G:/ProjektyELKA/TIN/src/PythonPoCClient/dane.txt";
-        this.pythonMapPath = "G:/ProjektyELKA/TIN/src/PythonPoCClient/map.py";
-        mapResults = new ArrayList<Pair<String, Integer>>();
-
-    }
-
-
-    public static void map(){
+    public static void map(RegisterWorkersQueueWrapper registerWorkersQueueWrapper){
 
         //zakladamy dla uproszczenia, ze:
         //wywolujemy skrypt pythonowy, ktory czyta z wejscia standardowego
@@ -58,22 +55,31 @@ public class PythonRunner {
             BufferedReader reader = new BufferedReader(new InputStreamReader(stdout));
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stdin));
 
-            try (BufferedReader br = new BufferedReader(new FileReader(dataFile))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    System.out.println(line);
-                    writer.write(line);
-                    writer.newLine();
-                }
+            BufferedReader br = new BufferedReader(new FileReader(dataFilePath));
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+                writer.write(line);
+                writer.newLine();
             }
+
             writer.close();
             process.waitFor();
 
             while(reader.ready()) {
-                System.out.println(reader.readLine());
+                String resultPair[] = reader.readLine().split("=>");
+                synchronized (registerWorkersQueueWrapper){
+                    registerWorkersQueueWrapper.put(new Pair<>(resultPair[0],Integer.valueOf(resultPair[1])));
+                    // to avoid sync problem
+                    if(!reader.ready()){
+                        registerWorkersQueueWrapper.setIsEnd(true);
+                    }
+                }
             }
+
         } catch (Exception e) {
-            System.out.println("Exception occured");
+            System.out.println("Exception occurred in PythonRunner");
+            e.printStackTrace();
         }
     }
 }
