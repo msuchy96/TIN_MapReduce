@@ -68,9 +68,9 @@ public class PythonRunner {
 
             while(reader.ready()) {
                 String resultPair[] = reader.readLine().split("=>");
+                // to avoid sync problem with end of the
                 synchronized (registerWorkersQueueWrapper){
                     registerWorkersQueueWrapper.put(new Pair<>(resultPair[0],Integer.valueOf(resultPair[1])));
-                    // to avoid sync problem
                     if(!reader.ready()){
                         registerWorkersQueueWrapper.setIsEnd(true);
                     }
