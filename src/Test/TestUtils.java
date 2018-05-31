@@ -5,5 +5,5 @@ package Test;
  */
 public class TestUtils {
     public static final Integer NUMBER_OF_WORKERS = 100;
-    public static final Integer BUFF_SIZE = 10;
+    public static final Integer BUFF_SIZE = 3;
 }

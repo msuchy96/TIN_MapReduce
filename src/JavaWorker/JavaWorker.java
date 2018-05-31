@@ -198,25 +198,14 @@ public class JavaWorker {
 
                     List<KeyValueEntity> keyValueEntityList = new ArrayList<>();
 
-                    //TODO: debug this logic on test
                     //TODO: add ilosc to thrift and logic to it
-                    int actualIndex = 0;
-                    while(actualIndex < pairList.size()){
-                        int inBuff = 0;
-                        for(int i = actualIndex; i<pairList.size();i++){
-                            if(inBuff == TestUtils.BUFF_SIZE){
-                                actualIndex = i;
-                                break;
-                            }
-                            keyValueEntityList.add(new KeyValueEntity(pairList.get(i).left,pairList.get(i).right.toString()));
-                            inBuff++;
+                    for(int i=0; i<pairList.size();i++){
+                        keyValueEntityList.add(new KeyValueEntity(pairList.get(i).left,pairList.get(i).right.toString()));
+                        if((i+1) % TestUtils.BUFF_SIZE == 0 || (i+1) == pairList.size()){
+                            client.RegisterMapPair(keyValueEntityList);
+                            keyValueEntityList.clear();
                         }
-                        client.RegisterMapPair(keyValueEntityList);
                     }
-
-
-
-
                 }catch(Exception err){
                     System.out.println("Exception occurred during sending to workers");
                     err.printStackTrace();
