@@ -131,13 +131,13 @@ public class JavaWorker {
                         workerListManager.add(registerWorkersQueueWrapper.take());
                     }
 
-                    sendToWorkers(workerListManager);
-
+                    sendToWorkersAndWait(workerListManager);
                     System.out.println("Finish Map");
                     System.in.read();
                     client.FinishedMap();
-                    System.out.println("Finish Reduce");
+                    
 
+                    System.out.println("Finish Reduce");
                     System.in.read();
                     client.FinishedReduce();
                     System.out.println("Send Results");
@@ -162,11 +162,22 @@ public class JavaWorker {
             return true;
         }
 
-        private void sendToWorkers(WorkerListManager workerListManager){
+        private void sendToWorkersAndWait(WorkerListManager workerListManager){
+            List<Future<String>> threadListToWairFor = new ArrayList<>();
             ExecutorService executor= Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
             try{
                 for (Integer workerId: workerListManager.getKeyValueEntityMap().keySet()){
-                    executor.execute(new NewThread(workerId, workerListManager.getKeyValueEntityList(workerId)));
+                    NewThread newThread = new NewThread(workerId, workerListManager.getKeyValueEntityList(workerId));
+                    Future<String> future = executor.submit(newThread);
+                    threadListToWairFor.add(future);
+                }
+                for(Future<String> fut : threadListToWairFor) {
+                    try {
+                        //Future.get() waits for task to get completed
+                        System.out.println("RegisterMapPair Result::" + fut.get());
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
                 }
             }catch(Exception err){
                 err.printStackTrace();
@@ -175,7 +186,7 @@ public class JavaWorker {
         }
 
         // TODO: ustawienie hosta z pliku konfiguracyjnego na podstawie workerId
-        private class NewThread implements Runnable{
+        private class NewThread implements Callable{
             int workerId;
             List<KeyValueEntity> keyValueEntityList;
 
@@ -183,7 +194,7 @@ public class JavaWorker {
                 this.workerId = workerId;
                 this.keyValueEntityList = keyValueEntityList;
             }
-            public void run(){
+            public String call(){
                 try{
                     TTransport transport = new TSocket("localhost", port);
                     TProtocol protocol = new TBinaryProtocol(transport);
@@ -197,9 +208,11 @@ public class JavaWorker {
                             keyValueEntityBuffer.clear();
                         }
                     }
+                    return TestUtils.SUCCESS + workerId;
                 }catch(Exception err){
                     System.out.println("Exception occurred during sending to workers");
                     err.printStackTrace();
+                    return TestUtils.ERROR+ workerId;
                 }
             }
         }
