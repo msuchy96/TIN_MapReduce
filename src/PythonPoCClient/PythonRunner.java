@@ -1,6 +1,6 @@
 package PythonPoCClient;
 
-import JavaWorker.RegisterWorkersQueueWrapper;
+import JavaWorker.DataSyncWrapper;
 import org.apache.commons.lang3.Pair;
 
 import java.io.*;
@@ -31,7 +31,7 @@ public class PythonRunner {
         pythonReducePath = sourceFilePath + reduceFile;
     }
 
-    public static void map(RegisterWorkersQueueWrapper registerWorkersQueueWrapper){
+    public static void map(DataSyncWrapper dataSyncWrapper){
 
         //zakladamy dla uproszczenia, ze:
         //wywolujemy skrypt pythonowy, ktory czyta z wejscia standardowego
@@ -68,10 +68,10 @@ public class PythonRunner {
             while(reader.ready()) {
                 String resultPair[] = reader.readLine().split("=>");
                 // to avoid sync problem with end of the
-                synchronized (registerWorkersQueueWrapper){
-                    registerWorkersQueueWrapper.put(new Pair<>(resultPair[0],Integer.valueOf(resultPair[1])));
+                synchronized (dataSyncWrapper){
+                    dataSyncWrapper.putInRegisterWorkersQueue(new Pair<>(resultPair[0],Integer.valueOf(resultPair[1])));
                     if(!reader.ready()){
-                        registerWorkersQueueWrapper.setEnd(true);
+                        dataSyncWrapper.setEndOfRegisterWorkersQueue(true);
                     }
                 }
             }

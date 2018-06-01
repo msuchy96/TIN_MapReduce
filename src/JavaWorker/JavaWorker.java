@@ -35,12 +35,12 @@ public class JavaWorker {
         // creates fixed thread pool
         final ExecutorService es = Executors.newFixedThreadPool(2);
 
-        RegisterWorkersQueueWrapper registerWorkersQueueWrapper = new RegisterWorkersQueueWrapper(TestUtils.NUMBER_OF_WORKERS);
+        DataSyncWrapper dataSyncWrapper = new DataSyncWrapper(TestUtils.NUMBER_OF_WORKERS);
 
         // server callable thread starts to execute
-        final Future<Boolean> f1 = es.submit(new ServerCallClass(registerWorkersQueueWrapper));
+        final Future<Boolean> f1 = es.submit(new ServerCallClass(dataSyncWrapper));
         // client callable thread starts to execute
-        final Future<Boolean> f2 = es.submit(new ClientCallClass(registerWorkersQueueWrapper));
+        final Future<Boolean> f2 = es.submit(new ClientCallClass(dataSyncWrapper));
 
 
 
@@ -59,15 +59,15 @@ public class JavaWorker {
 
     protected class ServerCallClass implements Callable<Boolean>
     {
-        RegisterWorkersQueueWrapper registerWorkersQueueWrapper;
+        DataSyncWrapper dataSyncWrapper;
 
-        protected ServerCallClass(RegisterWorkersQueueWrapper registerWorkersQueueWrapper){
-            this.registerWorkersQueueWrapper = registerWorkersQueueWrapper;
+        protected ServerCallClass(DataSyncWrapper dataSyncWrapper){
+            this.dataSyncWrapper = dataSyncWrapper;
         }
 
         public Boolean call(){
             try{
-                MapReduceWorkerHandler handler = new MapReduceWorkerHandler(registerWorkersQueueWrapper);
+                MapReduceWorkerHandler handler = new MapReduceWorkerHandler(dataSyncWrapper);
                 MapReduceWorker.Processor processor = new MapReduceWorker.Processor(handler);
 
                 //MY IP
@@ -93,10 +93,10 @@ public class JavaWorker {
 
     protected class ClientCallClass implements Callable<Boolean>
     {
-        RegisterWorkersQueueWrapper registerWorkersQueueWrapper;
+        DataSyncWrapper dataSyncWrapper;
 
-        protected ClientCallClass(RegisterWorkersQueueWrapper registerWorkersQueueWrapper){
-            this.registerWorkersQueueWrapper = registerWorkersQueueWrapper;
+        protected ClientCallClass(DataSyncWrapper dataSyncWrapper){
+            this.dataSyncWrapper = dataSyncWrapper;
         }
 
         public Boolean call(){
@@ -127,16 +127,17 @@ public class JavaWorker {
 
                     WorkerListManager workerListManager = new WorkerListManager();
                     //takes from workersQueue till the end
-                    while(!registerWorkersQueueWrapper.IsEnd()){
-                        workerListManager.add(registerWorkersQueueWrapper.take());
+                    while(!dataSyncWrapper.IsEndOfRegisterWorkersQueue()){
+                        workerListManager.add(dataSyncWrapper.takeFromRegisterWorkersQueue());
                     }
 
                     sendToWorkersAndWait(workerListManager);
                     System.out.println("Finish Map");
                     System.in.read();
                     client.FinishedMap();
-                    
 
+                    dataSyncWrapper.waitForStartReduce();
+                    
                     System.out.println("Finish Reduce");
                     System.in.read();
                     client.FinishedReduce();
