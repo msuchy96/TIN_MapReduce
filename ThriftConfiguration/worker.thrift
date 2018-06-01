@@ -6,6 +6,7 @@ exception InvalidState {
 struct KeyValueEntity {
     1: required string key;
     2: required string value;
+	3: required i32 quantity;
 }
 struct ClientListeningInfo {
     1: required i32 ip;
