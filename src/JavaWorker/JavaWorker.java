@@ -136,8 +136,7 @@ public class JavaWorker {
                         workerListManager.add(registerWorkersQueueWrapper.take());
                     }
 
-                    sendToWorkers(workerListManager.getWorkersMap());
-
+                    sendToWorkers(workerListManager);
                     System.out.println("Finish Map");
                     System.in.read();
                     client.FinishedMap();
@@ -150,7 +149,6 @@ public class JavaWorker {
                     client.RegisterResult("key", "value");
                 } finally {
                     transport.close();
-
                 }
             } catch (IOException e){
                 System.out.println("Input Exception occurred!");
@@ -168,12 +166,11 @@ public class JavaWorker {
             return true;
         }
 
-        private void sendToWorkers(Map<Integer,List<Pair<String,Integer>>> workersMap){
+        private void sendToWorkers(WorkerListManager workerListManager){
             ExecutorService executor= Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
             try{
-
-                for (Integer workerId: workersMap.keySet()){
-                    executor.execute(new NewThread(workerId, workersMap.get(workerId)));
+                for (Integer workerId: workerListManager.getKeyValueEntityMap().keySet()){
+                    executor.execute(new NewThread(workerId, workerListManager.getKeyValueEntityList(workerId)));
                 }
             }catch(Exception err){
                 err.printStackTrace();
@@ -184,11 +181,11 @@ public class JavaWorker {
         // TODO: ustawienie hosta z pliku konfiguracyjnego na podstawie workerId
         private class NewThread implements Runnable{
             int workerId;
-            List<Pair<String,Integer>> pairList;
+            List<KeyValueEntity> keyValueEntityList;
 
-            public NewThread(Integer workerId, List<Pair<String,Integer>> pairList){
+            public NewThread(Integer workerId, List<KeyValueEntity> keyValueEntityList){
                 this.workerId = workerId;
-                this.pairList = pairList;
+                this.keyValueEntityList = keyValueEntityList;
             }
             public void run(){
                 try{
@@ -196,14 +193,12 @@ public class JavaWorker {
                     TProtocol protocol = new TBinaryProtocol(transport);
                     MapReduceWorker.Client client = new MapReduceWorker.Client(protocol);
 
-                    List<KeyValueEntity> keyValueEntityList = new ArrayList<>();
-
-                    //TODO: add ilosc to thrift and logic to it
-                    for(int i=0; i<pairList.size();i++){
-                        keyValueEntityList.add(new KeyValueEntity(pairList.get(i).left,pairList.get(i).right.toString()));
-                        if((i+1) % TestUtils.BUFF_SIZE == 0 || (i+1) == pairList.size()){
-                            client.RegisterMapPair(keyValueEntityList);
-                            keyValueEntityList.clear();
+                    List<KeyValueEntity> keyValueEntityBuffer = new ArrayList<>();
+                    for(int i=0; i<keyValueEntityList.size();i++){
+                        keyValueEntityBuffer.add(keyValueEntityList.get(i));
+                        if((i+1) % TestUtils.BUFF_SIZE == 0 || (i+1) == keyValueEntityList.size()){
+                            client.RegisterMapPair(keyValueEntityBuffer);
+                            keyValueEntityBuffer.clear();
                         }
                     }
                 }catch(Exception err){
