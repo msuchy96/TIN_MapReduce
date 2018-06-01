@@ -18,7 +18,7 @@ public class MapReduceMaster {
 
     public void FinishedMap() throws InvalidState, org.apache.thrift.TException;
 
-    public void RegisterResult(java.lang.String key, java.lang.String value) throws InvalidState, org.apache.thrift.TException;
+    public void RegisterResult(String key, String value) throws InvalidState, org.apache.thrift.TException;
 
     public void FinishedReduce() throws InvalidState, org.apache.thrift.TException;
 
@@ -26,13 +26,13 @@ public class MapReduceMaster {
 
   public interface AsyncIface {
 
-    public void RegisterWorker(int ip, int listeningPort, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
+    public void RegisterWorker(int ip, int listeningPort, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws org.apache.thrift.TException;
 
     public void Reconnect(org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws org.apache.thrift.TException;
 
     public void FinishedMap(org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws org.apache.thrift.TException;
 
-    public void RegisterResult(java.lang.String key, java.lang.String value, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws org.apache.thrift.TException;
+    public void RegisterResult(String key, String value, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws org.apache.thrift.TException;
 
     public void FinishedReduce(org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws org.apache.thrift.TException;
 
@@ -118,13 +118,13 @@ public class MapReduceMaster {
       return;
     }
 
-    public void RegisterResult(java.lang.String key, java.lang.String value) throws InvalidState, org.apache.thrift.TException
+    public void RegisterResult(String key, String value) throws InvalidState, org.apache.thrift.TException
     {
       send_RegisterResult(key, value);
       recv_RegisterResult();
     }
 
-    public void send_RegisterResult(java.lang.String key, java.lang.String value) throws org.apache.thrift.TException
+    public void send_RegisterResult(String key, String value) throws org.apache.thrift.TException
     {
       RegisterResult_args args = new RegisterResult_args();
       args.setKey(key);
@@ -182,17 +182,17 @@ public class MapReduceMaster {
       super(protocolFactory, clientManager, transport);
     }
 
-    public void RegisterWorker(int ip, int listeningPort, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
+    public void RegisterWorker(int ip, int listeningPort, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws org.apache.thrift.TException {
       checkReady();
       RegisterWorker_call method_call = new RegisterWorker_call(ip, listeningPort, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class RegisterWorker_call extends org.apache.thrift.async.TAsyncMethodCall<java.lang.Boolean> {
+    public static class RegisterWorker_call extends org.apache.thrift.async.TAsyncMethodCall<Boolean> {
       private int ip;
       private int listeningPort;
-      public RegisterWorker_call(int ip, int listeningPort, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public RegisterWorker_call(int ip, int listeningPort, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.ip = ip;
         this.listeningPort = listeningPort;
@@ -207,9 +207,9 @@ public class MapReduceMaster {
         prot.writeMessageEnd();
       }
 
-      public java.lang.Boolean getResult() throws InvalidState, org.apache.thrift.TException {
-        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
-          throw new java.lang.IllegalStateException("Method call not finished!");
+      public Boolean getResult() throws InvalidState, org.apache.thrift.TException {
+        if (getState() != State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
@@ -237,8 +237,8 @@ public class MapReduceMaster {
       }
 
       public Void getResult() throws org.apache.thrift.TException {
-        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
-          throw new java.lang.IllegalStateException("Method call not finished!");
+        if (getState() != State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
@@ -266,8 +266,8 @@ public class MapReduceMaster {
       }
 
       public Void getResult() throws InvalidState, org.apache.thrift.TException {
-        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
-          throw new java.lang.IllegalStateException("Method call not finished!");
+        if (getState() != State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
@@ -275,7 +275,7 @@ public class MapReduceMaster {
       }
     }
 
-    public void RegisterResult(java.lang.String key, java.lang.String value, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws org.apache.thrift.TException {
+    public void RegisterResult(String key, String value, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws org.apache.thrift.TException {
       checkReady();
       RegisterResult_call method_call = new RegisterResult_call(key, value, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
@@ -283,9 +283,9 @@ public class MapReduceMaster {
     }
 
     public static class RegisterResult_call extends org.apache.thrift.async.TAsyncMethodCall<Void> {
-      private java.lang.String key;
-      private java.lang.String value;
-      public RegisterResult_call(java.lang.String key, java.lang.String value, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private String key;
+      private String value;
+      public RegisterResult_call(String key, String value, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.key = key;
         this.value = value;
@@ -301,8 +301,8 @@ public class MapReduceMaster {
       }
 
       public Void getResult() throws InvalidState, org.apache.thrift.TException {
-        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
-          throw new java.lang.IllegalStateException("Method call not finished!");
+        if (getState() != State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
@@ -330,8 +330,8 @@ public class MapReduceMaster {
       }
 
       public Void getResult() throws InvalidState, org.apache.thrift.TException {
-        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
-          throw new java.lang.IllegalStateException("Method call not finished!");
+        if (getState() != State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
@@ -344,14 +344,14 @@ public class MapReduceMaster {
   public static class Processor<I extends Iface> extends org.apache.thrift.TBaseProcessor<I> implements org.apache.thrift.TProcessor {
     private static final org.slf4j.Logger _LOGGER = org.slf4j.LoggerFactory.getLogger(Processor.class.getName());
     public Processor(I iface) {
-      super(iface, getProcessMap(new java.util.HashMap<java.lang.String, org.apache.thrift.ProcessFunction<I, ? extends org.apache.thrift.TBase>>()));
+      super(iface, getProcessMap(new java.util.HashMap<String, org.apache.thrift.ProcessFunction<I, ? extends org.apache.thrift.TBase>>()));
     }
 
-    protected Processor(I iface, java.util.Map<java.lang.String, org.apache.thrift.ProcessFunction<I, ? extends org.apache.thrift.TBase>> processMap) {
+    protected Processor(I iface, java.util.Map<String, org.apache.thrift.ProcessFunction<I, ? extends org.apache.thrift.TBase>> processMap) {
       super(iface, getProcessMap(processMap));
     }
 
-    private static <I extends Iface> java.util.Map<java.lang.String,  org.apache.thrift.ProcessFunction<I, ? extends org.apache.thrift.TBase>> getProcessMap(java.util.Map<java.lang.String, org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> processMap) {
+    private static <I extends Iface> java.util.Map<String,  org.apache.thrift.ProcessFunction<I, ? extends org.apache.thrift.TBase>> getProcessMap(java.util.Map<String, org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> processMap) {
       processMap.put("RegisterWorker", new RegisterWorker());
       processMap.put("Reconnect", new Reconnect());
       processMap.put("FinishedMap", new FinishedMap());
@@ -506,14 +506,14 @@ public class MapReduceMaster {
   public static class AsyncProcessor<I extends AsyncIface> extends org.apache.thrift.TBaseAsyncProcessor<I> {
     private static final org.slf4j.Logger _LOGGER = org.slf4j.LoggerFactory.getLogger(AsyncProcessor.class.getName());
     public AsyncProcessor(I iface) {
-      super(iface, getProcessMap(new java.util.HashMap<java.lang.String, org.apache.thrift.AsyncProcessFunction<I, ? extends org.apache.thrift.TBase, ?>>()));
+      super(iface, getProcessMap(new java.util.HashMap<String, org.apache.thrift.AsyncProcessFunction<I, ? extends org.apache.thrift.TBase, ?>>()));
     }
 
-    protected AsyncProcessor(I iface, java.util.Map<java.lang.String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase, ?>> processMap) {
+    protected AsyncProcessor(I iface, java.util.Map<String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase, ?>> processMap) {
       super(iface, getProcessMap(processMap));
     }
 
-    private static <I extends AsyncIface> java.util.Map<java.lang.String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase,?>> getProcessMap(java.util.Map<java.lang.String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase, ?>> processMap) {
+    private static <I extends AsyncIface> java.util.Map<String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase,?>> getProcessMap(java.util.Map<String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase, ?>> processMap) {
       processMap.put("RegisterWorker", new RegisterWorker());
       processMap.put("Reconnect", new Reconnect());
       processMap.put("FinishedMap", new FinishedMap());
@@ -522,7 +522,7 @@ public class MapReduceMaster {
       return processMap;
     }
 
-    public static class RegisterWorker<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, RegisterWorker_args, java.lang.Boolean> {
+    public static class RegisterWorker<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, RegisterWorker_args, Boolean> {
       public RegisterWorker() {
         super("RegisterWorker");
       }
@@ -531,10 +531,10 @@ public class MapReduceMaster {
         return new RegisterWorker_args();
       }
 
-      public org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> getResultHandler(final org.apache.thrift.server.AbstractNonblockingServer.AsyncFrameBuffer fb, final int seqid) {
+      public org.apache.thrift.async.AsyncMethodCallback<Boolean> getResultHandler(final org.apache.thrift.server.AbstractNonblockingServer.AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean>() { 
-          public void onComplete(java.lang.Boolean o) {
+        return new org.apache.thrift.async.AsyncMethodCallback<Boolean>() {
+          public void onComplete(Boolean o) {
             RegisterWorker_result result = new RegisterWorker_result();
             result.success = o;
             result.setSuccessIsSet(true);
@@ -543,12 +543,12 @@ public class MapReduceMaster {
             } catch (org.apache.thrift.transport.TTransportException e) {
               _LOGGER.error("TTransportException writing to internal frame buffer", e);
               fb.close();
-            } catch (java.lang.Exception e) {
+            } catch (Exception e) {
               _LOGGER.error("Exception writing to internal frame buffer", e);
               onError(e);
             }
           }
-          public void onError(java.lang.Exception e) {
+          public void onError(Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TSerializable msg;
             RegisterWorker_result result = new RegisterWorker_result();
@@ -571,7 +571,7 @@ public class MapReduceMaster {
             }
             try {
               fcall.sendResponse(fb,msg,msgType,seqid);
-            } catch (java.lang.Exception ex) {
+            } catch (Exception ex) {
               _LOGGER.error("Exception writing to internal frame buffer", ex);
               fb.close();
             }
@@ -583,7 +583,7 @@ public class MapReduceMaster {
         return false;
       }
 
-      public void start(I iface, RegisterWorker_args args, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
+      public void start(I iface, RegisterWorker_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws org.apache.thrift.TException {
         iface.RegisterWorker(args.ip, args.listeningPort,resultHandler);
       }
     }
@@ -602,7 +602,7 @@ public class MapReduceMaster {
         return new org.apache.thrift.async.AsyncMethodCallback<Void>() { 
           public void onComplete(Void o) {
           }
-          public void onError(java.lang.Exception e) {
+          public void onError(Exception e) {
             if (e instanceof org.apache.thrift.transport.TTransportException) {
               _LOGGER.error("TTransportException inside handler", e);
               fb.close();
@@ -641,12 +641,12 @@ public class MapReduceMaster {
             } catch (org.apache.thrift.transport.TTransportException e) {
               _LOGGER.error("TTransportException writing to internal frame buffer", e);
               fb.close();
-            } catch (java.lang.Exception e) {
+            } catch (Exception e) {
               _LOGGER.error("Exception writing to internal frame buffer", e);
               onError(e);
             }
           }
-          public void onError(java.lang.Exception e) {
+          public void onError(Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TSerializable msg;
             FinishedMap_result result = new FinishedMap_result();
@@ -669,7 +669,7 @@ public class MapReduceMaster {
             }
             try {
               fcall.sendResponse(fb,msg,msgType,seqid);
-            } catch (java.lang.Exception ex) {
+            } catch (Exception ex) {
               _LOGGER.error("Exception writing to internal frame buffer", ex);
               fb.close();
             }
@@ -705,12 +705,12 @@ public class MapReduceMaster {
             } catch (org.apache.thrift.transport.TTransportException e) {
               _LOGGER.error("TTransportException writing to internal frame buffer", e);
               fb.close();
-            } catch (java.lang.Exception e) {
+            } catch (Exception e) {
               _LOGGER.error("Exception writing to internal frame buffer", e);
               onError(e);
             }
           }
-          public void onError(java.lang.Exception e) {
+          public void onError(Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TSerializable msg;
             RegisterResult_result result = new RegisterResult_result();
@@ -733,7 +733,7 @@ public class MapReduceMaster {
             }
             try {
               fcall.sendResponse(fb,msg,msgType,seqid);
-            } catch (java.lang.Exception ex) {
+            } catch (Exception ex) {
               _LOGGER.error("Exception writing to internal frame buffer", ex);
               fb.close();
             }
@@ -769,12 +769,12 @@ public class MapReduceMaster {
             } catch (org.apache.thrift.transport.TTransportException e) {
               _LOGGER.error("TTransportException writing to internal frame buffer", e);
               fb.close();
-            } catch (java.lang.Exception e) {
+            } catch (Exception e) {
               _LOGGER.error("Exception writing to internal frame buffer", e);
               onError(e);
             }
           }
-          public void onError(java.lang.Exception e) {
+          public void onError(Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TSerializable msg;
             FinishedReduce_result result = new FinishedReduce_result();
@@ -797,7 +797,7 @@ public class MapReduceMaster {
             }
             try {
               fcall.sendResponse(fb,msg,msgType,seqid);
-            } catch (java.lang.Exception ex) {
+            } catch (Exception ex) {
               _LOGGER.error("Exception writing to internal frame buffer", ex);
               fb.close();
             }
@@ -833,7 +833,7 @@ public class MapReduceMaster {
       IP((short)1, "ip"),
       LISTENING_PORT((short)2, "listeningPort");
 
-      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+      private static final java.util.Map<String, _Fields> byName = new java.util.HashMap<String, _Fields>();
 
       static {
         for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
@@ -861,21 +861,21 @@ public class MapReduceMaster {
        */
       public static _Fields findByThriftIdOrThrow(int fieldId) {
         _Fields fields = findByThriftId(fieldId);
-        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
         return fields;
       }
 
       /**
        * Find the _Fields constant that matches name, or null if its not found.
        */
-      public static _Fields findByName(java.lang.String name) {
+      public static _Fields findByName(String name) {
         return byName.get(name);
       }
 
       private final short _thriftId;
-      private final java.lang.String _fieldName;
+      private final String _fieldName;
 
-      _Fields(short thriftId, java.lang.String fieldName) {
+      _Fields(short thriftId, String fieldName) {
         _thriftId = thriftId;
         _fieldName = fieldName;
       }
@@ -884,7 +884,7 @@ public class MapReduceMaster {
         return _thriftId;
       }
 
-      public java.lang.String getFieldName() {
+      public String getFieldName() {
         return _fieldName;
       }
     }
@@ -985,13 +985,13 @@ public class MapReduceMaster {
       __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __LISTENINGPORT_ISSET_ID, value);
     }
 
-    public void setFieldValue(_Fields field, java.lang.Object value) {
+    public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case IP:
         if (value == null) {
           unsetIp();
         } else {
-          setIp((java.lang.Integer)value);
+          setIp((Integer)value);
         }
         break;
 
@@ -999,14 +999,14 @@ public class MapReduceMaster {
         if (value == null) {
           unsetListeningPort();
         } else {
-          setListeningPort((java.lang.Integer)value);
+          setListeningPort((Integer)value);
         }
         break;
 
       }
     }
 
-    public java.lang.Object getFieldValue(_Fields field) {
+    public Object getFieldValue(_Fields field) {
       switch (field) {
       case IP:
         return getIp();
@@ -1015,13 +1015,13 @@ public class MapReduceMaster {
         return getListeningPort();
 
       }
-      throw new java.lang.IllegalStateException();
+      throw new IllegalStateException();
     }
 
     /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
     public boolean isSet(_Fields field) {
       if (field == null) {
-        throw new java.lang.IllegalArgumentException();
+        throw new IllegalArgumentException();
       }
 
       switch (field) {
@@ -1030,11 +1030,11 @@ public class MapReduceMaster {
       case LISTENING_PORT:
         return isSetListeningPort();
       }
-      throw new java.lang.IllegalStateException();
+      throw new IllegalStateException();
     }
 
     @Override
-    public boolean equals(java.lang.Object that) {
+    public boolean equals(Object that) {
       if (that == null)
         return false;
       if (that instanceof RegisterWorker_args)
@@ -1088,7 +1088,7 @@ public class MapReduceMaster {
 
       int lastComparison = 0;
 
-      lastComparison = java.lang.Boolean.valueOf(isSetIp()).compareTo(other.isSetIp());
+      lastComparison = Boolean.valueOf(isSetIp()).compareTo(other.isSetIp());
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1098,7 +1098,7 @@ public class MapReduceMaster {
           return lastComparison;
         }
       }
-      lastComparison = java.lang.Boolean.valueOf(isSetListeningPort()).compareTo(other.isSetListeningPort());
+      lastComparison = Boolean.valueOf(isSetListeningPort()).compareTo(other.isSetListeningPort());
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1124,8 +1124,8 @@ public class MapReduceMaster {
     }
 
     @Override
-    public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("RegisterWorker_args(");
+    public String toString() {
+      StringBuilder sb = new StringBuilder("RegisterWorker_args(");
       boolean first = true;
 
       sb.append("ip:");
@@ -1152,7 +1152,7 @@ public class MapReduceMaster {
       }
     }
 
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
       try {
         // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
         __isset_bitfield = 0;
@@ -1287,7 +1287,7 @@ public class MapReduceMaster {
       SUCCESS((short)0, "success"),
       INVALID_STATE((short)1, "invalidState");
 
-      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+      private static final java.util.Map<String, _Fields> byName = new java.util.HashMap<String, _Fields>();
 
       static {
         for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
@@ -1315,21 +1315,21 @@ public class MapReduceMaster {
        */
       public static _Fields findByThriftIdOrThrow(int fieldId) {
         _Fields fields = findByThriftId(fieldId);
-        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
         return fields;
       }
 
       /**
        * Find the _Fields constant that matches name, or null if its not found.
        */
-      public static _Fields findByName(java.lang.String name) {
+      public static _Fields findByName(String name) {
         return byName.get(name);
       }
 
       private final short _thriftId;
-      private final java.lang.String _fieldName;
+      private final String _fieldName;
 
-      _Fields(short thriftId, java.lang.String fieldName) {
+      _Fields(short thriftId, String fieldName) {
         _thriftId = thriftId;
         _fieldName = fieldName;
       }
@@ -1338,7 +1338,7 @@ public class MapReduceMaster {
         return _thriftId;
       }
 
-      public java.lang.String getFieldName() {
+      public String getFieldName() {
         return _fieldName;
       }
     }
@@ -1439,13 +1439,13 @@ public class MapReduceMaster {
       }
     }
 
-    public void setFieldValue(_Fields field, java.lang.Object value) {
+    public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((java.lang.Boolean)value);
+          setSuccess((Boolean)value);
         }
         break;
 
@@ -1460,7 +1460,7 @@ public class MapReduceMaster {
       }
     }
 
-    public java.lang.Object getFieldValue(_Fields field) {
+    public Object getFieldValue(_Fields field) {
       switch (field) {
       case SUCCESS:
         return isSuccess();
@@ -1469,13 +1469,13 @@ public class MapReduceMaster {
         return getInvalidState();
 
       }
-      throw new java.lang.IllegalStateException();
+      throw new IllegalStateException();
     }
 
     /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
     public boolean isSet(_Fields field) {
       if (field == null) {
-        throw new java.lang.IllegalArgumentException();
+        throw new IllegalArgumentException();
       }
 
       switch (field) {
@@ -1484,11 +1484,11 @@ public class MapReduceMaster {
       case INVALID_STATE:
         return isSetInvalidState();
       }
-      throw new java.lang.IllegalStateException();
+      throw new IllegalStateException();
     }
 
     @Override
-    public boolean equals(java.lang.Object that) {
+    public boolean equals(Object that) {
       if (that == null)
         return false;
       if (that instanceof RegisterWorker_result)
@@ -1544,7 +1544,7 @@ public class MapReduceMaster {
 
       int lastComparison = 0;
 
-      lastComparison = java.lang.Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1554,7 +1554,7 @@ public class MapReduceMaster {
           return lastComparison;
         }
       }
-      lastComparison = java.lang.Boolean.valueOf(isSetInvalidState()).compareTo(other.isSetInvalidState());
+      lastComparison = Boolean.valueOf(isSetInvalidState()).compareTo(other.isSetInvalidState());
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1580,8 +1580,8 @@ public class MapReduceMaster {
       }
 
     @Override
-    public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("RegisterWorker_result(");
+    public String toString() {
+      StringBuilder sb = new StringBuilder("RegisterWorker_result(");
       boolean first = true;
 
       sb.append("success:");
@@ -1612,7 +1612,7 @@ public class MapReduceMaster {
       }
     }
 
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
       try {
         // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
         __isset_bitfield = 0;
@@ -1748,7 +1748,7 @@ public class MapReduceMaster {
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
 ;
 
-      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+      private static final java.util.Map<String, _Fields> byName = new java.util.HashMap<String, _Fields>();
 
       static {
         for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
@@ -1772,21 +1772,21 @@ public class MapReduceMaster {
        */
       public static _Fields findByThriftIdOrThrow(int fieldId) {
         _Fields fields = findByThriftId(fieldId);
-        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
         return fields;
       }
 
       /**
        * Find the _Fields constant that matches name, or null if its not found.
        */
-      public static _Fields findByName(java.lang.String name) {
+      public static _Fields findByName(String name) {
         return byName.get(name);
       }
 
       private final short _thriftId;
-      private final java.lang.String _fieldName;
+      private final String _fieldName;
 
-      _Fields(short thriftId, java.lang.String fieldName) {
+      _Fields(short thriftId, String fieldName) {
         _thriftId = thriftId;
         _fieldName = fieldName;
       }
@@ -1795,7 +1795,7 @@ public class MapReduceMaster {
         return _thriftId;
       }
 
-      public java.lang.String getFieldName() {
+      public String getFieldName() {
         return _fieldName;
       }
     }
@@ -1823,30 +1823,30 @@ public class MapReduceMaster {
     public void clear() {
     }
 
-    public void setFieldValue(_Fields field, java.lang.Object value) {
+    public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       }
     }
 
-    public java.lang.Object getFieldValue(_Fields field) {
+    public Object getFieldValue(_Fields field) {
       switch (field) {
       }
-      throw new java.lang.IllegalStateException();
+      throw new IllegalStateException();
     }
 
     /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
     public boolean isSet(_Fields field) {
       if (field == null) {
-        throw new java.lang.IllegalArgumentException();
+        throw new IllegalArgumentException();
       }
 
       switch (field) {
       }
-      throw new java.lang.IllegalStateException();
+      throw new IllegalStateException();
     }
 
     @Override
-    public boolean equals(java.lang.Object that) {
+    public boolean equals(Object that) {
       if (that == null)
         return false;
       if (that instanceof Reconnect_args)
@@ -1894,8 +1894,8 @@ public class MapReduceMaster {
     }
 
     @Override
-    public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("Reconnect_args(");
+    public String toString() {
+      StringBuilder sb = new StringBuilder("Reconnect_args(");
       boolean first = true;
 
       sb.append(")");
@@ -1915,7 +1915,7 @@ public class MapReduceMaster {
       }
     }
 
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
       try {
         read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
       } catch (org.apache.thrift.TException te) {
@@ -1998,7 +1998,7 @@ public class MapReduceMaster {
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
 ;
 
-      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+      private static final java.util.Map<String, _Fields> byName = new java.util.HashMap<String, _Fields>();
 
       static {
         for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
@@ -2022,21 +2022,21 @@ public class MapReduceMaster {
        */
       public static _Fields findByThriftIdOrThrow(int fieldId) {
         _Fields fields = findByThriftId(fieldId);
-        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
         return fields;
       }
 
       /**
        * Find the _Fields constant that matches name, or null if its not found.
        */
-      public static _Fields findByName(java.lang.String name) {
+      public static _Fields findByName(String name) {
         return byName.get(name);
       }
 
       private final short _thriftId;
-      private final java.lang.String _fieldName;
+      private final String _fieldName;
 
-      _Fields(short thriftId, java.lang.String fieldName) {
+      _Fields(short thriftId, String fieldName) {
         _thriftId = thriftId;
         _fieldName = fieldName;
       }
@@ -2045,7 +2045,7 @@ public class MapReduceMaster {
         return _thriftId;
       }
 
-      public java.lang.String getFieldName() {
+      public String getFieldName() {
         return _fieldName;
       }
     }
@@ -2073,30 +2073,30 @@ public class MapReduceMaster {
     public void clear() {
     }
 
-    public void setFieldValue(_Fields field, java.lang.Object value) {
+    public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       }
     }
 
-    public java.lang.Object getFieldValue(_Fields field) {
+    public Object getFieldValue(_Fields field) {
       switch (field) {
       }
-      throw new java.lang.IllegalStateException();
+      throw new IllegalStateException();
     }
 
     /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
     public boolean isSet(_Fields field) {
       if (field == null) {
-        throw new java.lang.IllegalArgumentException();
+        throw new IllegalArgumentException();
       }
 
       switch (field) {
       }
-      throw new java.lang.IllegalStateException();
+      throw new IllegalStateException();
     }
 
     @Override
-    public boolean equals(java.lang.Object that) {
+    public boolean equals(Object that) {
       if (that == null)
         return false;
       if (that instanceof FinishedMap_args)
@@ -2144,8 +2144,8 @@ public class MapReduceMaster {
     }
 
     @Override
-    public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("FinishedMap_args(");
+    public String toString() {
+      StringBuilder sb = new StringBuilder("FinishedMap_args(");
       boolean first = true;
 
       sb.append(")");
@@ -2165,7 +2165,7 @@ public class MapReduceMaster {
       }
     }
 
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
       try {
         read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
       } catch (org.apache.thrift.TException te) {
@@ -2250,7 +2250,7 @@ public class MapReduceMaster {
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       INVALID_STATE((short)1, "invalidState");
 
-      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+      private static final java.util.Map<String, _Fields> byName = new java.util.HashMap<String, _Fields>();
 
       static {
         for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
@@ -2276,21 +2276,21 @@ public class MapReduceMaster {
        */
       public static _Fields findByThriftIdOrThrow(int fieldId) {
         _Fields fields = findByThriftId(fieldId);
-        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
         return fields;
       }
 
       /**
        * Find the _Fields constant that matches name, or null if its not found.
        */
-      public static _Fields findByName(java.lang.String name) {
+      public static _Fields findByName(String name) {
         return byName.get(name);
       }
 
       private final short _thriftId;
-      private final java.lang.String _fieldName;
+      private final String _fieldName;
 
-      _Fields(short thriftId, java.lang.String fieldName) {
+      _Fields(short thriftId, String fieldName) {
         _thriftId = thriftId;
         _fieldName = fieldName;
       }
@@ -2299,7 +2299,7 @@ public class MapReduceMaster {
         return _thriftId;
       }
 
-      public java.lang.String getFieldName() {
+      public String getFieldName() {
         return _fieldName;
       }
     }
@@ -2366,7 +2366,7 @@ public class MapReduceMaster {
       }
     }
 
-    public void setFieldValue(_Fields field, java.lang.Object value) {
+    public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case INVALID_STATE:
         if (value == null) {
@@ -2379,30 +2379,30 @@ public class MapReduceMaster {
       }
     }
 
-    public java.lang.Object getFieldValue(_Fields field) {
+    public Object getFieldValue(_Fields field) {
       switch (field) {
       case INVALID_STATE:
         return getInvalidState();
 
       }
-      throw new java.lang.IllegalStateException();
+      throw new IllegalStateException();
     }
 
     /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
     public boolean isSet(_Fields field) {
       if (field == null) {
-        throw new java.lang.IllegalArgumentException();
+        throw new IllegalArgumentException();
       }
 
       switch (field) {
       case INVALID_STATE:
         return isSetInvalidState();
       }
-      throw new java.lang.IllegalStateException();
+      throw new IllegalStateException();
     }
 
     @Override
-    public boolean equals(java.lang.Object that) {
+    public boolean equals(Object that) {
       if (that == null)
         return false;
       if (that instanceof FinishedMap_result)
@@ -2447,7 +2447,7 @@ public class MapReduceMaster {
 
       int lastComparison = 0;
 
-      lastComparison = java.lang.Boolean.valueOf(isSetInvalidState()).compareTo(other.isSetInvalidState());
+      lastComparison = Boolean.valueOf(isSetInvalidState()).compareTo(other.isSetInvalidState());
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -2473,8 +2473,8 @@ public class MapReduceMaster {
       }
 
     @Override
-    public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("FinishedMap_result(");
+    public String toString() {
+      StringBuilder sb = new StringBuilder("FinishedMap_result(");
       boolean first = true;
 
       sb.append("invalidState:");
@@ -2501,7 +2501,7 @@ public class MapReduceMaster {
       }
     }
 
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
       try {
         read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
       } catch (org.apache.thrift.TException te) {
@@ -2609,15 +2609,15 @@ public class MapReduceMaster {
     private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new RegisterResult_argsStandardSchemeFactory();
     private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new RegisterResult_argsTupleSchemeFactory();
 
-    public java.lang.String key; // required
-    public java.lang.String value; // required
+    public String key; // required
+    public String value; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       KEY((short)1, "key"),
       VALUE((short)2, "value");
 
-      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+      private static final java.util.Map<String, _Fields> byName = new java.util.HashMap<String, _Fields>();
 
       static {
         for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
@@ -2645,21 +2645,21 @@ public class MapReduceMaster {
        */
       public static _Fields findByThriftIdOrThrow(int fieldId) {
         _Fields fields = findByThriftId(fieldId);
-        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
         return fields;
       }
 
       /**
        * Find the _Fields constant that matches name, or null if its not found.
        */
-      public static _Fields findByName(java.lang.String name) {
+      public static _Fields findByName(String name) {
         return byName.get(name);
       }
 
       private final short _thriftId;
-      private final java.lang.String _fieldName;
+      private final String _fieldName;
 
-      _Fields(short thriftId, java.lang.String fieldName) {
+      _Fields(short thriftId, String fieldName) {
         _thriftId = thriftId;
         _fieldName = fieldName;
       }
@@ -2668,7 +2668,7 @@ public class MapReduceMaster {
         return _thriftId;
       }
 
-      public java.lang.String getFieldName() {
+      public String getFieldName() {
         return _fieldName;
       }
     }
@@ -2689,8 +2689,8 @@ public class MapReduceMaster {
     }
 
     public RegisterResult_args(
-      java.lang.String key,
-      java.lang.String value)
+      String key,
+      String value)
     {
       this();
       this.key = key;
@@ -2719,11 +2719,11 @@ public class MapReduceMaster {
       this.value = null;
     }
 
-    public java.lang.String getKey() {
+    public String getKey() {
       return this.key;
     }
 
-    public RegisterResult_args setKey(java.lang.String key) {
+    public RegisterResult_args setKey(String key) {
       this.key = key;
       return this;
     }
@@ -2743,11 +2743,11 @@ public class MapReduceMaster {
       }
     }
 
-    public java.lang.String getValue() {
+    public String getValue() {
       return this.value;
     }
 
-    public RegisterResult_args setValue(java.lang.String value) {
+    public RegisterResult_args setValue(String value) {
       this.value = value;
       return this;
     }
@@ -2767,13 +2767,13 @@ public class MapReduceMaster {
       }
     }
 
-    public void setFieldValue(_Fields field, java.lang.Object value) {
+    public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case KEY:
         if (value == null) {
           unsetKey();
         } else {
-          setKey((java.lang.String)value);
+          setKey((String)value);
         }
         break;
 
@@ -2781,14 +2781,14 @@ public class MapReduceMaster {
         if (value == null) {
           unsetValue();
         } else {
-          setValue((java.lang.String)value);
+          setValue((String)value);
         }
         break;
 
       }
     }
 
-    public java.lang.Object getFieldValue(_Fields field) {
+    public Object getFieldValue(_Fields field) {
       switch (field) {
       case KEY:
         return getKey();
@@ -2797,13 +2797,13 @@ public class MapReduceMaster {
         return getValue();
 
       }
-      throw new java.lang.IllegalStateException();
+      throw new IllegalStateException();
     }
 
     /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
     public boolean isSet(_Fields field) {
       if (field == null) {
-        throw new java.lang.IllegalArgumentException();
+        throw new IllegalArgumentException();
       }
 
       switch (field) {
@@ -2812,11 +2812,11 @@ public class MapReduceMaster {
       case VALUE:
         return isSetValue();
       }
-      throw new java.lang.IllegalStateException();
+      throw new IllegalStateException();
     }
 
     @Override
-    public boolean equals(java.lang.Object that) {
+    public boolean equals(Object that) {
       if (that == null)
         return false;
       if (that instanceof RegisterResult_args)
@@ -2874,7 +2874,7 @@ public class MapReduceMaster {
 
       int lastComparison = 0;
 
-      lastComparison = java.lang.Boolean.valueOf(isSetKey()).compareTo(other.isSetKey());
+      lastComparison = Boolean.valueOf(isSetKey()).compareTo(other.isSetKey());
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -2884,7 +2884,7 @@ public class MapReduceMaster {
           return lastComparison;
         }
       }
-      lastComparison = java.lang.Boolean.valueOf(isSetValue()).compareTo(other.isSetValue());
+      lastComparison = Boolean.valueOf(isSetValue()).compareTo(other.isSetValue());
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -2910,8 +2910,8 @@ public class MapReduceMaster {
     }
 
     @Override
-    public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("RegisterResult_args(");
+    public String toString() {
+      StringBuilder sb = new StringBuilder("RegisterResult_args(");
       boolean first = true;
 
       sb.append("key:");
@@ -2946,7 +2946,7 @@ public class MapReduceMaster {
       }
     }
 
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
       try {
         read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
       } catch (org.apache.thrift.TException te) {
@@ -3080,7 +3080,7 @@ public class MapReduceMaster {
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       INVALID_STATE((short)1, "invalidState");
 
-      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+      private static final java.util.Map<String, _Fields> byName = new java.util.HashMap<String, _Fields>();
 
       static {
         for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
@@ -3106,21 +3106,21 @@ public class MapReduceMaster {
        */
       public static _Fields findByThriftIdOrThrow(int fieldId) {
         _Fields fields = findByThriftId(fieldId);
-        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
         return fields;
       }
 
       /**
        * Find the _Fields constant that matches name, or null if its not found.
        */
-      public static _Fields findByName(java.lang.String name) {
+      public static _Fields findByName(String name) {
         return byName.get(name);
       }
 
       private final short _thriftId;
-      private final java.lang.String _fieldName;
+      private final String _fieldName;
 
-      _Fields(short thriftId, java.lang.String fieldName) {
+      _Fields(short thriftId, String fieldName) {
         _thriftId = thriftId;
         _fieldName = fieldName;
       }
@@ -3129,7 +3129,7 @@ public class MapReduceMaster {
         return _thriftId;
       }
 
-      public java.lang.String getFieldName() {
+      public String getFieldName() {
         return _fieldName;
       }
     }
@@ -3196,7 +3196,7 @@ public class MapReduceMaster {
       }
     }
 
-    public void setFieldValue(_Fields field, java.lang.Object value) {
+    public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case INVALID_STATE:
         if (value == null) {
@@ -3209,30 +3209,30 @@ public class MapReduceMaster {
       }
     }
 
-    public java.lang.Object getFieldValue(_Fields field) {
+    public Object getFieldValue(_Fields field) {
       switch (field) {
       case INVALID_STATE:
         return getInvalidState();
 
       }
-      throw new java.lang.IllegalStateException();
+      throw new IllegalStateException();
     }
 
     /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
     public boolean isSet(_Fields field) {
       if (field == null) {
-        throw new java.lang.IllegalArgumentException();
+        throw new IllegalArgumentException();
       }
 
       switch (field) {
       case INVALID_STATE:
         return isSetInvalidState();
       }
-      throw new java.lang.IllegalStateException();
+      throw new IllegalStateException();
     }
 
     @Override
-    public boolean equals(java.lang.Object that) {
+    public boolean equals(Object that) {
       if (that == null)
         return false;
       if (that instanceof RegisterResult_result)
@@ -3277,7 +3277,7 @@ public class MapReduceMaster {
 
       int lastComparison = 0;
 
-      lastComparison = java.lang.Boolean.valueOf(isSetInvalidState()).compareTo(other.isSetInvalidState());
+      lastComparison = Boolean.valueOf(isSetInvalidState()).compareTo(other.isSetInvalidState());
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -3303,8 +3303,8 @@ public class MapReduceMaster {
       }
 
     @Override
-    public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("RegisterResult_result(");
+    public String toString() {
+      StringBuilder sb = new StringBuilder("RegisterResult_result(");
       boolean first = true;
 
       sb.append("invalidState:");
@@ -3331,7 +3331,7 @@ public class MapReduceMaster {
       }
     }
 
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
       try {
         read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
       } catch (org.apache.thrift.TException te) {
@@ -3442,7 +3442,7 @@ public class MapReduceMaster {
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
 ;
 
-      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+      private static final java.util.Map<String, _Fields> byName = new java.util.HashMap<String, _Fields>();
 
       static {
         for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
@@ -3466,21 +3466,21 @@ public class MapReduceMaster {
        */
       public static _Fields findByThriftIdOrThrow(int fieldId) {
         _Fields fields = findByThriftId(fieldId);
-        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
         return fields;
       }
 
       /**
        * Find the _Fields constant that matches name, or null if its not found.
        */
-      public static _Fields findByName(java.lang.String name) {
+      public static _Fields findByName(String name) {
         return byName.get(name);
       }
 
       private final short _thriftId;
-      private final java.lang.String _fieldName;
+      private final String _fieldName;
 
-      _Fields(short thriftId, java.lang.String fieldName) {
+      _Fields(short thriftId, String fieldName) {
         _thriftId = thriftId;
         _fieldName = fieldName;
       }
@@ -3489,7 +3489,7 @@ public class MapReduceMaster {
         return _thriftId;
       }
 
-      public java.lang.String getFieldName() {
+      public String getFieldName() {
         return _fieldName;
       }
     }
@@ -3517,30 +3517,30 @@ public class MapReduceMaster {
     public void clear() {
     }
 
-    public void setFieldValue(_Fields field, java.lang.Object value) {
+    public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       }
     }
 
-    public java.lang.Object getFieldValue(_Fields field) {
+    public Object getFieldValue(_Fields field) {
       switch (field) {
       }
-      throw new java.lang.IllegalStateException();
+      throw new IllegalStateException();
     }
 
     /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
     public boolean isSet(_Fields field) {
       if (field == null) {
-        throw new java.lang.IllegalArgumentException();
+        throw new IllegalArgumentException();
       }
 
       switch (field) {
       }
-      throw new java.lang.IllegalStateException();
+      throw new IllegalStateException();
     }
 
     @Override
-    public boolean equals(java.lang.Object that) {
+    public boolean equals(Object that) {
       if (that == null)
         return false;
       if (that instanceof FinishedReduce_args)
@@ -3588,8 +3588,8 @@ public class MapReduceMaster {
     }
 
     @Override
-    public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("FinishedReduce_args(");
+    public String toString() {
+      StringBuilder sb = new StringBuilder("FinishedReduce_args(");
       boolean first = true;
 
       sb.append(")");
@@ -3609,7 +3609,7 @@ public class MapReduceMaster {
       }
     }
 
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
       try {
         read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
       } catch (org.apache.thrift.TException te) {
@@ -3694,7 +3694,7 @@ public class MapReduceMaster {
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       INVALID_STATE((short)1, "invalidState");
 
-      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+      private static final java.util.Map<String, _Fields> byName = new java.util.HashMap<String, _Fields>();
 
       static {
         for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
@@ -3720,21 +3720,21 @@ public class MapReduceMaster {
        */
       public static _Fields findByThriftIdOrThrow(int fieldId) {
         _Fields fields = findByThriftId(fieldId);
-        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
         return fields;
       }
 
       /**
        * Find the _Fields constant that matches name, or null if its not found.
        */
-      public static _Fields findByName(java.lang.String name) {
+      public static _Fields findByName(String name) {
         return byName.get(name);
       }
 
       private final short _thriftId;
-      private final java.lang.String _fieldName;
+      private final String _fieldName;
 
-      _Fields(short thriftId, java.lang.String fieldName) {
+      _Fields(short thriftId, String fieldName) {
         _thriftId = thriftId;
         _fieldName = fieldName;
       }
@@ -3743,7 +3743,7 @@ public class MapReduceMaster {
         return _thriftId;
       }
 
-      public java.lang.String getFieldName() {
+      public String getFieldName() {
         return _fieldName;
       }
     }
@@ -3810,7 +3810,7 @@ public class MapReduceMaster {
       }
     }
 
-    public void setFieldValue(_Fields field, java.lang.Object value) {
+    public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case INVALID_STATE:
         if (value == null) {
@@ -3823,30 +3823,30 @@ public class MapReduceMaster {
       }
     }
 
-    public java.lang.Object getFieldValue(_Fields field) {
+    public Object getFieldValue(_Fields field) {
       switch (field) {
       case INVALID_STATE:
         return getInvalidState();
 
       }
-      throw new java.lang.IllegalStateException();
+      throw new IllegalStateException();
     }
 
     /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
     public boolean isSet(_Fields field) {
       if (field == null) {
-        throw new java.lang.IllegalArgumentException();
+        throw new IllegalArgumentException();
       }
 
       switch (field) {
       case INVALID_STATE:
         return isSetInvalidState();
       }
-      throw new java.lang.IllegalStateException();
+      throw new IllegalStateException();
     }
 
     @Override
-    public boolean equals(java.lang.Object that) {
+    public boolean equals(Object that) {
       if (that == null)
         return false;
       if (that instanceof FinishedReduce_result)
@@ -3891,7 +3891,7 @@ public class MapReduceMaster {
 
       int lastComparison = 0;
 
-      lastComparison = java.lang.Boolean.valueOf(isSetInvalidState()).compareTo(other.isSetInvalidState());
+      lastComparison = Boolean.valueOf(isSetInvalidState()).compareTo(other.isSetInvalidState());
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -3917,8 +3917,8 @@ public class MapReduceMaster {
       }
 
     @Override
-    public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("FinishedReduce_result(");
+    public String toString() {
+      StringBuilder sb = new StringBuilder("FinishedReduce_result(");
       boolean first = true;
 
       sb.append("invalidState:");
@@ -3945,7 +3945,7 @@ public class MapReduceMaster {
       }
     }
 
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
       try {
         read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
       } catch (org.apache.thrift.TException te) {
