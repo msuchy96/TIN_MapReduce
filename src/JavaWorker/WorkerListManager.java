@@ -36,11 +36,11 @@ public class WorkerListManager {
             if(keyValueEntityMap.get(workerId).keySet().contains(pair)){
                 keyValueEntityMap.get(workerId).get(pair).setQuantity(keyValueEntityMap.get(workerId).get(pair).getQuantity()+1);
             }else{
-                keyValueEntityMap.get(workerId).put(pair,new KeyValueEntity(pair.left,pair.right.toString(),1));
+                keyValueEntityMap.get(workerId).put(pair,new KeyValueEntity(pair.left,String.valueOf(pair.right),1));
             }
         }else{
             HashMap<Pair<String,Integer>,KeyValueEntity> tmpHashMap = new HashMap<>();
-            tmpHashMap.put(pair,new KeyValueEntity(pair.left,pair.right.toString(),1));
+            tmpHashMap.put(pair,new KeyValueEntity(pair.left,String.valueOf(pair.right),1));
             keyValueEntityMap.put(workerId,tmpHashMap);
         }
     }
