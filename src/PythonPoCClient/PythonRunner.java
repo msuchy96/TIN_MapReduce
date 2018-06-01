@@ -31,22 +31,15 @@ public class PythonRunner {
         pythonReducePath = sourceFilePath + reduceFile;
     }
 
-    public static void map(DataSyncWrapper dataSyncWrapper){
+    public void map(DataSyncWrapper dataSyncWrapper){
 
         //zakladamy dla uproszczenia, ze:
         //wywolujemy skrypt pythonowy, ktory czyta z wejscia standardowego
         //na wejscie standardowe MY wrzucamy dane z dataFile
         //a wyniki ma wypluwac na stdout w postaci KLUCZ=>WARTOSC, gdzie wartosc musi dac sie sparsowac na inta, klucz dowolny(string)
 
-        ArrayList<Pair<String,Integer>> mapResults= new ArrayList<Pair<String,Integer>>();
-
         try {
-            System.out.println("Start process execution for python");
-            ProcessBuilder pb = new ProcessBuilder(Arrays.asList(pythonPath, pythonMapPath));
-            pb.redirectErrorStream(true);
-            pb.redirectInput();
-            pb.redirectOutput();
-            Process process = pb.start();
+            Process process = createProcess(pythonMapPath);
 
             OutputStream stdin = process.getOutputStream(); // The Process OuputStream (our point of view) is the STDIN from the process point of view
             InputStream stdout = process.getInputStream();
@@ -80,6 +73,50 @@ public class PythonRunner {
             System.out.println("Exception occurred in PythonRunner");
             e.printStackTrace();
         }
+    }
+
+    public void reduce(DataSyncWrapper dataSyncWrapper){
+
+        try {
+           for(String key: dataSyncWrapper.getMyKeyValuesMap().keySet()){
+               Process process = createProcess(pythonReducePath);
+
+               OutputStream stdin = process.getOutputStream();
+               InputStream stdout = process.getInputStream();
+
+               BufferedReader reader = new BufferedReader(new InputStreamReader(stdout));
+               BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stdin));
+
+
+               for(Integer value: dataSyncWrapper.getMyKeyValuesMap().get(key)){
+                   writer.write(key+"=>"+String.valueOf(value));
+                   writer.newLine();
+               }
+               writer.close();
+               process.waitFor();
+
+               while(reader.ready()){
+                   String result = reader.readLine();
+                   // to avoid sync problem with end of the
+                   dataSyncWrapper.addToResultList(key,result);
+               }
+           }
+           dataSyncWrapper.reduceFinished();
+
+
+        } catch (Exception e) {
+            System.out.println("Exception occurred in PythonRunner");
+            e.printStackTrace();
+        }
+    }
+
+    private static Process createProcess(String pythonFunctionPath) throws IOException{
+        System.out.println("Start process execution for python");
+        ProcessBuilder pb = new ProcessBuilder(Arrays.asList(pythonPath, pythonFunctionPath));
+        pb.redirectErrorStream(true);
+        pb.redirectInput();
+        pb.redirectOutput();
+        return  pb.start();
     }
 }
 
