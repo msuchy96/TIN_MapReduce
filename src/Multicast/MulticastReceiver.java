@@ -1,9 +1,12 @@
 package Multicast;
 
+import Configuration.WorkerConfiguration;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.SocketAddress;
 
 /**
  * Created by suchy on 28.05.2018.
@@ -13,27 +16,25 @@ public class MulticastReceiver extends Thread {
     protected byte[] buf = new byte[256];
     private static final String MASTER_WELCOME = "HELLOIAMMASTER";
     private Boolean masterReadiness;
+    private WorkerConfiguration workerConfiguration;
 
-
-
-    /*
-    TODO 1: multicast group ipv4 address, socket port
-    TODO 2: what is in get datagram?
-
-     */
+    public MulticastReceiver(WorkerConfiguration workerConfiguration){
+        this.workerConfiguration = workerConfiguration;
+    }
 
     public Boolean isMasterReady (){ return masterReadiness; };
 
     public void run() {
         try{
-            socket = new MulticastSocket(4446);
-            InetAddress group = InetAddress.getByName("230.0.0.0");
+            socket = new MulticastSocket(workerConfiguration.getMulticastGroupPort());
+            InetAddress group = InetAddress.getByName(workerConfiguration.getIp());
             socket.joinGroup(group);
             System.out.println("Joined multicast group");
             // try to receive as long as special statement occurs
             while (true) {
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socket.receive(packet);
+                workerConfiguration.setMasterIp(packet.getAddress().getHostAddress());
                 String received = new String(
                         packet.getData(), 0, packet.getLength());
 
@@ -47,7 +48,7 @@ public class MulticastReceiver extends Thread {
             socket.close();
             masterReadiness = true;
         } catch(IOException e){
-            System.out.println("Exception during multicasting occured");
+            System.out.println("Exception during multicast occurred");
             e.printStackTrace();
             masterReadiness = false;
         }

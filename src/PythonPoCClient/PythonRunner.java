@@ -12,23 +12,21 @@ import java.util.Arrays;
  * Created by suchy on 29.05.2018.
  */
 public class PythonRunner {
-    private static String pythonPath = "C:/Python27/python.exe";
-    private static String sourceFilePath = "G:/ProjektyELKA/TIN/src/PythonPoCClient/sources/";
-
-
     private static String dataFilePath;
     private static String pythonMapPath;
     private static String pythonReducePath;
+    private static String pythonPath;
     public ArrayList<Pair<String,Integer>> mapResults;
 
     public ArrayList<Pair<String,Integer>> getMapResults(){
         return mapResults;
     }
 
-    public PythonRunner(String dataFile, String mapFile, String reduceFile){
+    public PythonRunner(String dataFile, String mapFile, String reduceFile, String sourceFilePath, String pythonPath){
         dataFilePath = sourceFilePath + dataFile;
         pythonMapPath = sourceFilePath + mapFile;
         pythonReducePath = sourceFilePath + reduceFile;
+        this.pythonPath = pythonPath;
     }
 
     public void map(DataSyncWrapper dataSyncWrapper){

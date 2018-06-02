@@ -1,3 +1,5 @@
+import Configuration.ConfigurationManager;
+import Configuration.WorkerConfiguration;
 import JavaWorker.JavaWorker;
 import Multicast.MulticastReceiver;
 
@@ -9,14 +11,18 @@ public class MapReduceJavaWorkerProgram {
 
         System.out.println("MapReduceJavaWorkerProgram started");
 
-        MulticastReceiver multicastReceiver = new MulticastReceiver();
+        WorkerConfiguration workerConfiguration = new WorkerConfiguration();
+        ConfigurationManager.loadConfiguration(workerConfiguration);
+        System.out.println("Configuration loaded");
+
+        MulticastReceiver multicastReceiver = new MulticastReceiver(workerConfiguration);
         System.out.println("MulticastReceiver created");
 
         multicastReceiver.run();
 
         // run worker
         if(multicastReceiver.isMasterReady()){
-            JavaWorker worker = new JavaWorker();
+            JavaWorker worker = new JavaWorker(workerConfiguration);
             worker.start();
         }
 
