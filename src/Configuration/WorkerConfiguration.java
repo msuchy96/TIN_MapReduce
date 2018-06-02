@@ -1,8 +1,5 @@
 package Configuration;
 
-import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by suchy on 02.06.2018.
