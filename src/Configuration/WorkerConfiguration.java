@@ -1,6 +1,9 @@
 package Configuration;
 
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 /**
  * Created by suchy on 02.06.2018.
  */
@@ -15,6 +18,7 @@ public class WorkerConfiguration {
     private String dataStoragePath;
     private Integer bufferSize;
     private String masterIp;
+    private Integer ipInt;
 
     public String getMulticastGroupAddress() {
         return multicastGroupAddress;
@@ -44,8 +48,9 @@ public class WorkerConfiguration {
         return ip;
     }
 
-    public void setIp(String ip) {
+    public void setIp(String ip) throws UnknownHostException {
         this.ip = ip;
+        ipToInt(InetAddress.getByName(ip));
     }
 
     public Integer getMasterPort() {
@@ -86,5 +91,20 @@ public class WorkerConfiguration {
 
     public void setMasterIp(String masterIp){
         this.masterIp = masterIp;
+    }
+
+    public Integer getIpInt(){
+        return ipInt;
+    }
+
+    public void ipToInt(InetAddress ipAddr)
+    {
+        int compacted = 0;
+        byte[] bytes = ipAddr.getAddress();
+        for (int i=0 ; i<bytes.length ; i++)
+        {
+            compacted |= ( ( bytes[i] & 0xFF ) << ( 8 * i ) ) ;
+        }
+        ipInt = compacted;
     }
 }

@@ -14,7 +14,7 @@ import java.net.SocketAddress;
 public class MulticastReceiver extends Thread {
     protected MulticastSocket socket = null;
     protected byte[] buf = new byte[256];
-    private static final String MASTER_WELCOME = "HELLOIAMMASTER";
+    private static final String MASTER_WELCOME = "HELLOIMMASTER";
     private Boolean masterReadiness;
     private WorkerConfiguration workerConfiguration;
 
@@ -27,18 +27,18 @@ public class MulticastReceiver extends Thread {
     public void run() {
         try{
             socket = new MulticastSocket(workerConfiguration.getMulticastGroupPort());
-            InetAddress group = InetAddress.getByName(workerConfiguration.getIp());
+            InetAddress group = InetAddress.getByName(workerConfiguration.getMulticastGroupAddress());
             socket.joinGroup(group);
             System.out.println("Joined multicast group");
             // try to receive as long as special statement occurs
             while (true) {
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                System.out.print("Waiting for Master...");
                 socket.receive(packet);
                 workerConfiguration.setMasterIp(packet.getAddress().getHostAddress());
                 String received = new String(
                         packet.getData(), 0, packet.getLength());
-
-                if(MASTER_WELCOME.equals(received)) {
+                if(received.contains(MASTER_WELCOME)) {
                     System.out.println("Hello Master, nice to meet you!");
                     break;
                 }

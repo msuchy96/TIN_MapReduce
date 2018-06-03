@@ -17,12 +17,15 @@ import sun.net.util.IPAddressUtil;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
+import org.slf4j.*;
+
 
 /**
  * Created by suchy on 28.05.2018.
@@ -38,136 +41,125 @@ public class JavaWorker {
 
     public void start(){
         // creates fixed thread pool
-        final ExecutorService es = Executors.newFixedThreadPool(2);
+        ExecutorService pool = Executors.newFixedThreadPool(2);
+
 
         DataSyncWrapper dataSyncWrapper = new DataSyncWrapper();
-
-        // server callable thread starts to execute
-        final Future<Boolean> f1 = es.submit(new ServerCallClass(dataSyncWrapper));
-        // client callable thread starts to execute
-        final Future<Boolean> f2 = es.submit(new ClientCallClass(dataSyncWrapper));
-
-
-
         try{
-            while ( !f1.isDone() && !f2.isDone()){
-                Thread.sleep(20);
-                // gets value of callable thread if done
-                System.out.println("All done!");
-                System.out.println("Server ended with success?: " + String.valueOf(f1.get()));
-                System.out.println("Client ended with success?: " + String.valueOf(f2.get()));
+            // server runnable thread starts to execute
+            pool.execute(new ServerCallClass(dataSyncWrapper,workerConfiguration));
+            // client runnable thread starts to execute
+            pool.execute(new ClientCallClass(dataSyncWrapper,workerConfiguration));
+            if (!pool.awaitTermination(60, TimeUnit.MINUTES)){
+                pool.shutdownNow();
             }
-        } catch (Exception ex){
-            System.out.println("Something went wrong with Calls statuses");
+
+        } catch (InterruptedException e){
+            System.out.println("Something went wrong with main threads");
         }
     }
 
-    protected class ServerCallClass implements Callable<Boolean>
+    protected static class ServerCallClass implements Runnable
     {
         DataSyncWrapper dataSyncWrapper;
+        WorkerConfiguration workerConfiguration;
 
-        protected ServerCallClass(DataSyncWrapper dataSyncWrapper){
+        public static MapReduceWorkerHandler handler;
+        public static MapReduceWorker.Processor processor;
+
+        private ServerCallClass(DataSyncWrapper dataSyncWrapper, WorkerConfiguration workerConfiguration) {
             this.dataSyncWrapper = dataSyncWrapper;
+            this.workerConfiguration = workerConfiguration;
         }
 
-        public Boolean call(){
-            try{
-                MapReduceWorkerHandler handler = new MapReduceWorkerHandler(dataSyncWrapper, workerConfiguration);
-                MapReduceWorker.Processor processor = new MapReduceWorker.Processor(handler);
-
-                TServerTransport serverTransport = new TServerSocket(new ServerSocket(workerConfiguration.getListeningPort(),50, InetAddress.getByName(workerConfiguration.getIp())));
+        public void run() {
+            try {
+                System.out.println("Starting the worker server call method..");
+                handler = new MapReduceWorkerHandler(dataSyncWrapper, workerConfiguration);
+                processor = new MapReduceWorker.Processor<>(handler);
+                TServerTransport serverTransport = new TServerSocket(new InetSocketAddress(workerConfiguration.getIp(),workerConfiguration.getListeningPort()));
                 TServer server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(processor));
 
+
                 System.out.println("Starting the worker server...");
+                // server configuration ended
+                dataSyncWrapper.endOfAction(true);
                 server.serve(); // infinite loop inside
 
-                System.out.println("Done.");
-                return true;
-            } catch (UnknownHostException e){
-                System.out.println("UnknownHost Exception occurred!");
-                e.printStackTrace();
+                System.out.println("Worker Server Done.");
+
             } catch (TTransportException e) {
                 System.out.println("Thrift Transport Exception occurred!");
                 e.printStackTrace();
-            } finally {
-                return false;
+            } catch(InterruptedException e) {
+                System.out.println("Interrupted Exception occurred!");
+                e.printStackTrace();
             }
         }
     }
 
-    protected class ClientCallClass implements Callable<Boolean>
+    protected class ClientCallClass implements Runnable
     {
         DataSyncWrapper dataSyncWrapper;
+        WorkerConfiguration workerConfiguration;
 
-        protected ClientCallClass(DataSyncWrapper dataSyncWrapper){
+        private ClientCallClass(DataSyncWrapper dataSyncWrapper, WorkerConfiguration workerConfiguration){
             this.dataSyncWrapper = dataSyncWrapper;
+            this.workerConfiguration = workerConfiguration;
         }
 
-        public Boolean call(){
-            try{
+        public void run() {
+            try {
+                    dataSyncWrapper.waitForServer();
+                    TTransport transport = new TSocket(workerConfiguration.getMasterIp(), workerConfiguration.getMasterPort());
+                    TProtocol protocol = new TBinaryProtocol(transport);
+                    MapReduceMaster.Client client = new MapReduceMaster.Client(protocol);
 
-                //TODO: Tcp client?
-                TTransport transport = new TSocket(workerConfiguration.getMasterIp(),workerConfiguration.getMasterPort());
-                TProtocol protocol = new TBinaryProtocol(transport);
-                MapReduceMaster.Client client = new MapReduceMaster.Client(protocol);
-
-                try{
                     System.out.println("Trying to open connection...");
                     transport.open();
-                } catch (TException x) {
-                    System.out.println("Exception occurred: Unable to open connection!");
-                    x.printStackTrace();
-                    return false;
-                }
-                System.out.println("Client worker on...");
-
-                try{
+                    System.out.println("Client worker on...");
                     System.out.println("Register...");
-                    System.in.read();
-                    client.RegisterWorker(ByteBuffer.wrap(IPAddressUtil.textToNumericFormatV4(workerConfiguration.getIp())).getInt(),workerConfiguration.getListeningPort());
+                    client.RegisterWorker(workerConfiguration.getIpInt(), workerConfiguration.getListeningPort());
                     System.out.println("Register finished");
 
-                    WorkerListManager workerListManager = new WorkerListManager(dataSyncWrapper.getResultList().size(),dataSyncWrapper.getWorkersConfigurationList());
+                    dataSyncWrapper.waitForServer();
+                    WorkerListManager workerListManager = new WorkerListManager(dataSyncWrapper.getWorkersConfigurationList().size(), dataSyncWrapper.getWorkersConfigurationList());
                     //takes from workersQueue till the end (python putting)
                     //additional condition needed (putting last element after add(take()) case)
-                    while(!dataSyncWrapper.IsEndOfRegisterWorkersQueue() && dataSyncWrapper.isRegisterWorkersQueueEmpty()){
+
+                    while (!dataSyncWrapper.IsEndOfRegisterWorkersQueue() || !dataSyncWrapper.isRegisterWorkersQueueEmpty()) {
                         workerListManager.add(dataSyncWrapper.takeFromRegisterWorkersQueue());
+                        dataSyncWrapper.waitForServer();
                     }
 
+                    System.out.println("Koniec wrzucania:" + workerListManager.getKeyValueEntityList(0));
+                    System.out.println("Koniec wrzucania2:" + workerListManager.getKeyValueEntityMap());
+                    //TODO: EVERYTHING TESTED AND WORK TILL THAT POSITION
                     //sending to workers and waiting for all threads
                     sendToWorkersAndWait(workerListManager);
 
                     System.out.println("Finish Map");
-                    System.in.read();
+
                     //mapFinished commuciate to master
                     client.FinishedMap();
                     //waiting for master call and finishing reduce
                     dataSyncWrapper.waitForFinishReduce();
                     System.out.println("Finish Reduce");
-                    System.in.read();
+
                     client.FinishedReduce();
                     System.out.println("Send Results");
-                    System.in.read();
-                    for(Pair<String,String> pair: dataSyncWrapper.getResultList()){
-                        client.RegisterResult(pair.left,pair.right);
+
+                    for(Pair<String,String> pair: dataSyncWrapper.getResultList()) {
+                        client.RegisterResult(pair.left, pair.right);
                     }
-                } finally {
-                    transport.close();
+                transport.close();
+                } catch (TException e) {
+                    System.out.println("Thrift Exception occurred!");
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    System.out.println("Execption occureed during waiting for map results");
+                    e.printStackTrace();
                 }
-            } catch (IOException e){
-                System.out.println("Input Exception occurred!");
-                e.printStackTrace();
-                return false;
-            } catch (TException e){
-                System.out.println("Thrift Exception occurred!");
-                e.printStackTrace();
-                return false;
-            } catch(InterruptedException e) {
-                System.out.println("Execption occureed during waiting for map results");
-                e.printStackTrace();
-                return false;
-            }
-            return true;
         }
 
         private void sendToWorkersAndWait(WorkerListManager workerListManager){
@@ -195,7 +187,6 @@ public class JavaWorker {
             executor.shutdown(); // once you are done with ExecutorService
         }
 
-        // TODO: ustawienie hosta z pliku konfiguracyjnego na podstawie workerId
         private class NewThread implements Callable{
             int workerId;
             int port;

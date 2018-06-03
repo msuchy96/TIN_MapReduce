@@ -9,6 +9,7 @@ import org.apache.commons.lang3.Pair;
 
 import java.util.List;
 import java.util.Random;
+import org.slf4j.*;
 
 
 /**
@@ -38,6 +39,13 @@ public class MapReduceWorkerHandler implements MapReduceWorker.Iface {
         System.out.println("Get data: " + this.dataFileName + " map: " + this.mapFileName + " reduce: " + this.reduceFileName);
         System.out.println("Workers:");
         workersList.forEach(x -> System.out.println(x.toString()));
+        try{
+            dataSyncWrapper.endOfAction(true);
+        } catch(InterruptedException e){
+            System.out.println("InterruptedException occurred while syncing action between server and client");
+            e.printStackTrace();
+            return false;
+        }
         return true;
     }
 
@@ -47,7 +55,7 @@ public class MapReduceWorkerHandler implements MapReduceWorker.Iface {
         try {
             System.in.read();
         } catch (Exception e){
-            System.out.println("Exception occured while reading key");
+            System.out.println("Exception occurred while reading key");
             return false;
         }
         return true;
@@ -77,6 +85,7 @@ public class MapReduceWorkerHandler implements MapReduceWorker.Iface {
             }
         });
     }
+
 }
 
 

@@ -58,17 +58,25 @@ public class PythonRunner {
 
             while(reader.ready()) {
                 String resultPair[] = reader.readLine().split("=>");
+                System.out.println("Pair result from map: " + resultPair[0]+"=>"+resultPair[1]);
                 // to avoid sync problem with end of the
                 synchronized (dataSyncWrapper){
                     dataSyncWrapper.putInRegisterWorkersQueue(new Pair<>(resultPair[0],Integer.valueOf(resultPair[1])));
                     if(!reader.ready()){
                         dataSyncWrapper.setEndOfRegisterWorkersQueue(true);
                     }
+                    dataSyncWrapper.endOfAction(true);
                 }
             }
 
-        } catch (Exception e) {
-            System.out.println("Exception occurred in PythonRunner");
+        } catch(FileNotFoundException e){
+            System.out.println("File was not found in PythonRunner");
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.out.println("IO Exception occurred in PythonRunner");
+            e.printStackTrace();
+        } catch(InterruptedException e){
+            System.out.println("Interrupt Exception occurred in PythonRunner");
             e.printStackTrace();
         }
     }
