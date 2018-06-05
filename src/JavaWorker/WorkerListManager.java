@@ -35,7 +35,6 @@ public class WorkerListManager {
     }
 
     public synchronized void add(Pair<String,Integer> pair){
-        System.out.println("Python putting this pair:" + pair);
         Integer workerId = calculateId(pair.left);
         if(keyValueEntityMap.keySet().contains(workerId)){
             if(keyValueEntityMap.get(workerId).keySet().contains(pair)){

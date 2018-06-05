@@ -1,8 +1,11 @@
 package Configuration;
 
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 
 /**
  * Created by suchy on 02.06.2018.
@@ -53,6 +56,16 @@ public class WorkerConfiguration {
         ipToInt(InetAddress.getByName(ip));
     }
 
+    public Integer getIpInt(){
+        return ipInt;
+    }
+
+    public void ipToInt(InetAddress ipAddr) {
+        byte [] bytes = ipAddr.getAddress();
+        ArrayUtils.reverse(bytes);
+        ipInt = ByteBuffer.wrap(bytes).getInt();
+    }
+
     public Integer getMasterPort() {
         return masterPort;
     }
@@ -93,18 +106,5 @@ public class WorkerConfiguration {
         this.masterIp = masterIp;
     }
 
-    public Integer getIpInt(){
-        return ipInt;
-    }
 
-    public void ipToInt(InetAddress ipAddr)
-    {
-        int compacted = 0;
-        byte[] bytes = ipAddr.getAddress();
-        for (int i=0 ; i<bytes.length ; i++)
-        {
-            compacted |= ( ( bytes[i] & 0xFF ) << ( 8 * i ) ) ;
-        }
-        ipInt = compacted;
-    }
 }

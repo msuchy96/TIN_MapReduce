@@ -11,7 +11,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
-import org.slf4j.*;
 
 
 /**
@@ -38,13 +37,14 @@ public class MapReduceWorkerHandler implements MapReduceWorker.Iface {
         dataSyncWrapper.setWorkersConfigurationListList(workersList);
         pyRunner = new PythonRunner(dataFileName, mapFileName, reduceFileName, workerConfiguration.getDataStoragePath(), workerConfiguration.getPythonPath());
 
-        System.out.println("Get data: " + this.dataFileName + " map: " + this.mapFileName + " reduce: " + this.reduceFileName);
-        System.out.println("Workers:");
+        System.out.println("SERVER: Get data: " + this.dataFileName + " map: " + this.mapFileName + " reduce: " + this.reduceFileName);
+        System.out.println("SERVER: Workers:");
         workersList.forEach(x -> System.out.println(x.toString()));
         try{
+            System.out.println("SERVER: Work assigned!");
             dataSyncWrapper.endOfAction(true);
         } catch(InterruptedException e){
-            System.out.println("InterruptedException occurred while syncing action between server and client");
+            System.out.println("SERVER: InterruptedException occurred while syncing action between server and client");
             e.printStackTrace();
             return false;
         }
@@ -52,26 +52,26 @@ public class MapReduceWorkerHandler implements MapReduceWorker.Iface {
     }
 
     public boolean StartMap() {
-        System.out.println("Map begins");
+        System.out.println("SERVER: Map begins");
 
         try {
             pyRunner.map(dataSyncWrapper);
             return true;
         } catch(FileNotFoundException e){
-            System.out.println("File was not found in PythonRunner");
+            System.out.println("SERVER: File was not found in PythonRunner");
             e.printStackTrace();
         } catch (IOException e) {
-            System.out.println("IO Exception occurred in PythonRunner");
+            System.out.println("SERVER: IO Exception occurred in PythonRunner");
             e.printStackTrace();
         } catch(InterruptedException e){
-            System.out.println("Interrupt Exception occurred in PythonRunner");
+            System.out.println("SERVER: Interrupt Exception occurred in PythonRunner");
             e.printStackTrace();
         }
         return false;
     }
 
     public boolean StartReduce() {
-        System.out.println("Reduce begins");
+        System.out.println("SERVER: Reduce begins");
         try{
             pyRunner.reduce(dataSyncWrapper);
             synchronized (dataSyncWrapper){
@@ -79,31 +79,28 @@ public class MapReduceWorkerHandler implements MapReduceWorker.Iface {
             }
             return true;
         } catch(IOException e){
-            System.out.println("IO Exception occurred in PythonRunner");
+            System.out.println("SERVER: IO Exception occurred in PythonRunner");
             e.printStackTrace();
         } catch(InterruptedException e){
-            System.out.println("Interrupt Exception occurred in PythonRunner");
+            System.out.println("SERVER: Interrupt Exception occurred in PythonRunner");
             e.printStackTrace();
         }
         return false;
     }
 
-    public int Ping()
-    {
-        return new Random().nextInt();
-    }
+    public int Ping() { return new Random().nextInt();}
 
     public void RegisterMapPair(List<KeyValueEntity> pairs) {
-        System.out.println("I got pairs:");
-        pairs.forEach(x -> {
-            System.out.println(String.valueOf(x.getKey()) + " -> " + String.valueOf(x.getValue()) + " with quantity: " + String.valueOf(x.getQuantity()));
-            for(int i=0; i<x.getQuantity(); i++){
-                //adding as many pairs as quantity in pair
-                dataSyncWrapper.addToMyKeyValuesMap(new Pair<>(x.getKey(),Integer.valueOf(x.getValue())));
-            }
-        });
-    }
+        System.out.println("SERVER: RegisterMapPair begins");
+        pairs.forEach(x -> System.out.println("SERVER: I got pair: " +x ));
 
+        for(KeyValueEntity kVE: pairs){
+            //adding as many pairs as quantity in pair
+            for(int i=0; i<kVE.getQuantity(); i++){
+                dataSyncWrapper.addToMyKeyValuesMap(new Pair<>(kVE.getKey(),Integer.valueOf(kVE.getValue())));
+            }
+        }
+    }
 }
 
 

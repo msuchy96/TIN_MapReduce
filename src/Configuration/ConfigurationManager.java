@@ -37,8 +37,6 @@ public class ConfigurationManager {
             System.out.println("Parse exception occurred found!");
             e.printStackTrace();
         }
-
-
         return workerConfiguration;
     }
 }

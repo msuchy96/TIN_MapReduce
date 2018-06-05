@@ -33,7 +33,7 @@ public class MulticastReceiver extends Thread {
             // try to receive as long as special statement occurs
             while (true) {
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                System.out.print("Waiting for Master...");
+                System.out.println("Waiting for Master...");
                 socket.receive(packet);
                 workerConfiguration.setMasterIp(packet.getAddress().getHostAddress());
                 String received = new String(

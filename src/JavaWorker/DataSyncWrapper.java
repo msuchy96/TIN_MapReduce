@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by suchy on 31.05.2018.
@@ -32,7 +31,6 @@ public class DataSyncWrapper {
         finishReduce = new ArrayBlockingQueue<>(1);
         workersConfigurationList = new ArrayList<>();
         serverActionFlag = new ArrayBlockingQueue<>(100);
-
     }
 
     public synchronized void setEndOfRegisterWorkersQueue(Boolean end){
@@ -79,12 +77,13 @@ public class DataSyncWrapper {
 
     public synchronized void addToMyKeyValuesMap(Pair<String,Integer> kVE){
         if(myKeyValuesMap.get(kVE.left) != null){
-            myKeyValuesMap.get(kVE).add(kVE.right);
+            myKeyValuesMap.get(kVE.left).add(kVE.right);
         }else{
             List<Integer> newValuesList = new ArrayList<>();
             newValuesList.add(kVE.right);
             myKeyValuesMap.put(kVE.left,newValuesList);
         }
+
     }
 
     public synchronized Map<String,List<Integer>> getMyKeyValuesMap(){
