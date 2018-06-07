@@ -36,6 +36,7 @@ class SetClientThriftWithMasterState(OneShotState):
         self.worker_ref.infoLog("Client connection With Master active")
 
         self.worker_ref.createWorkerServer()
+        self.worker_ref.startServer()
         self.worker_ref.infoLog("Worker thrift server created")
 
         try:
@@ -65,7 +66,7 @@ class MasterConnectedState(OneShotState):
         OneShotState.__init__(self, worker_ref)
 
     def handleState(self):
-        self.worker_ref.debugLog("Master connected state")
+        self.worker_ref.infoLog("Waiting for work from master")
         raise ChangingStateException("WAIT_FOR_WORK")
 
 
@@ -76,31 +77,53 @@ class WaitForWorkState(InterruptableState):
         InterruptableState.__init__(self, worker_ref)
 
     def handleState(self):
-        self.worker_ref.infoLog("Waiting for work from master")
-        while 1:
+        if not self.isMasterLive():
+            self.worker_ref.warningLog("Master is dead. Try to connect with another")
+            raise NotImplemented("Wait for work")
 
-            if not self.isMasterLive():
-                self.worker_ref.warningLog("Master is dead. Try to connect with another")
-                raise NotImplemented("Wait for work")
+        map_request = self.worker_ref.isMapRequested()
+        if map_request :
+            self.worker_ref.infoLog("Receive map request from Master")
+            self.worker_ref.debugLog("Change state to Prepare and run Map()")
+            raise ChangingStateException("PREPARE_AND_RUN_MAP")
 
-            map_request = self.worker_ref.isMapRequested()
-            if map_request :
-                self.worker_ref.infoLog("Receive map request from Master")
-                self.worker_ref.debugLog("Try to catch data sending by Master")
-                raise ChangingStateException("CATCH_DATA_FROM_MASTER")
 
-       # raise NotImplemented("Wait for work")
-
-class CatchDataFromMaster(OneShotState):
+class PrepareAndRunMap(OneShotState):
     def __init__(self, worker_ref):
         OneShotState.__init__(self, worker_ref)
 
     def handleState(self):
-        self.worker_ref.debugLog("CatchDataFromMaster")
+        self.worker_ref.runMapProcess(self.worker_ref.mapPath(), self.worker_ref.dataToMapPath(), self.worker_ref.afterMapDataPath() )
+        self.worker_ref.infoLog("Run Map")
+        self.worker_ref.runPairManager()
+        self.worker_ref.infoLog("//Not implemented// Run after-map pair manager")
+
         raise ChangingStateException("MAP_STEP")
 
 
-class MapStep(InterruptableState):
+class MapStepState(InterruptableState):
+    def __init__(self, worker_ref):
+        InterruptableState.__init__(self, worker_ref)
+
+    def handleState(self):
+        if not self.isMasterLive():
+            self.worker_ref.warningLog("Master is dead. Try to connect with another")
+            raise NotImplemented("Wait for work")
+
+        if self.worker_ref.isMapProcessEnd() and self.worker_ref.isPairManagerEnd():
+            raise ChangingStateException("WAIT_FOR_REDUCE")
+
+        #raise NotImplemented("Map Step State")
+
+class WaitForReduceState(InterruptableState):
+    def __init__(self, worker_ref):
+        InterruptableState.__init__(worker_ref)
+
+    def handleState(self):
+        pass
+
+
+class ReduceStepState(InterruptableState):
     def __init__(self, worker_ref):
         InterruptableState.__init__(self, worker_ref)
 
@@ -108,6 +131,12 @@ class MapStep(InterruptableState):
         pass
 
 
+class SendResultsToMasterState(InterruptableState):
+    def __init__(self, worker_ref):
+        InterruptableState.__init__(self, worker_ref)
+
+    def handleState(self):
+        pass
 
 state_map = {
     "WAIT_FOR_MASTER": WaitingForMasterState,
@@ -115,8 +144,9 @@ state_map = {
     "WAIT_AS_THRIFT_SERVER_FOR_MASTER": WaitAsThriftServerForMasterState,
     "MASTER_CONNECTED": MasterConnectedState,
     "WAIT_FOR_WORK": WaitForWorkState,
-    "CATCH_DATA_FROM_MASTER": CatchDataFromMaster,
-    "MAP_STEP": MapStep,
-
-
+    "PREPARE_AND_RUN_MAP": PrepareAndRunMap,
+    "MAP_STEP": MapStepState,
+    "WAIT_FOR_REDUCE": WaitForReduceState,
+    "REDUCE_STEP": ReduceStepState,
+    "SEND_RESULTS_TO_MASTER": SendResultsToMasterState
 }

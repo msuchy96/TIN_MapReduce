@@ -1,3 +1,5 @@
+import threading
+
 from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
@@ -13,6 +15,7 @@ class ServerThrift:
         self.transport = TSocket.TServerSocket(host=my_ip, port=my_port)
         self.tfactory = TTransport.TBufferedTransportFactory()
         self.pfactory = TBinaryProtocol.TBinaryProtocolFactory()
+        self.server_thread = None
 
     def createSimpleServer(self):
         self.server = TServer.TSimpleServer(self.processor, self.transport, self.tfactory, self.pfactory)
@@ -20,8 +23,14 @@ class ServerThrift:
     def createThreadedServer(self):
         self.server = TServer.TThreadedServer(self.processor, self.transport, self.tfactory, self.pfactory)
 
+    def __call__(self, *args, **kwargs):
+        while 1:
+            self.server.serve()
+
     def startServing(self):
-        self.server.serve()
+        self.server_thread = threading.Thread(group=None, target=self, name='Worker Server Thread')
+        self.server_thread.start()
+
 
 
 '''

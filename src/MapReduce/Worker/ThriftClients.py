@@ -7,9 +7,10 @@ from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 
 from src.MapReduce.MasterServices.ttypes import InvalidState
+from src.MapReduce.WorkerServices import MapReduceWorker
 from ..MasterServices import MapReduceMaster
 import socket
-
+import ctypes
 
 class MasterRefuseConnection(Exception):
     pass
@@ -45,10 +46,40 @@ Tutaj mozemy wywolywac zdalnie metody na masterze.
 
 '''
 
+class InvalidMethodCalledException(Exception):
+    pass
+
+
+class WorkerServiceClient(ClientThriftConnection):
+    def __init__(self):
+        ClientThriftConnection.__init__(self)
+
+    def createClient(self):
+        self.thrift_client = MapReduceWorker.Client(self.protocol)
+
+
+    def AssignWork(self, dataFileName, mapFileName, reduceFileName, workersList):
+        raise InvalidMethodCalledException("WorkerServiceClient: Try to call AssignWork at another Worker")
+
+
+    def StartMap(self):
+        raise InvalidMethodCalledException("WorkerServiceClient: Try to call StartMap at another Worker")
+
+    def StartReduce(self):
+        raise InvalidMethodCalledException("WorkerServiceClient: Try to call StartReduce at another Worker")
+
+    def Ping(self):
+        return self.thrift_client.Ping()
+
+    def RegisterMapPair(self, pairs):
+        """
+        Parameters:
+         - pairs
+        """
+        raise NotImplemented("RegisterMapPair")
+
 
 class MasterServiceClientConnection(ClientThriftConnection):
-#    def __init__(self, server_ip, server_port):
-#        super.__init__(self, server_port, server_ip)
 
     def __init__(self):
         ClientThriftConnection.__init__(self)
@@ -58,7 +89,7 @@ class MasterServiceClientConnection(ClientThriftConnection):
 
     def registerWorker(self, worker_server_ip, worker_server_port):
         try:
-            accept = self.thrift_client.RegisterWorker(socket.htonl(int(ip_address(socket.inet_aton(worker_server_ip))))-0xFFFFFFFF , worker_server_port)
+            accept = self.thrift_client.RegisterWorker(socket.htonl(int(ip_address(socket.inet_aton(worker_server_ip)))) - 1 - 0xFFFFFFFF  , worker_server_port)
             #cholerny Python - tyle kombinowania, zeby z uinta zrobic inta ....
 
             if not accept:

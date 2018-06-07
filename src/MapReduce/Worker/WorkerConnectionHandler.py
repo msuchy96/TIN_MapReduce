@@ -5,15 +5,20 @@ from src.MapReduce.WorkerServices.ttypes import InvalidState
 
 '''
 Klasa implementujaca funkcje, ktore mozna wykonac zdalnie poprzez Thrifta na Workerze
-Sluzy klasie WorkerServerThriftConnection
+Sluzy klasie WorkerServerThriftConnection jako obsluga metod serwera Thrift
+Instancje ten klasy posiada Worker, i ta instancja jest przekazywana serwerowi do obslugi  
+Przechowuje wszystkie dane, otrzymywane od Mastera
 '''
+
+class ContentNotExistException(Exception):
+    pass
 
 
 class WorkerConnectionHandler(Iface):
     def __init__(self):
-        self.data_file_name = ""
-        self.map_file_name = ""
-        self.reduce_file_name = ""
+        self.data_file_name = None
+        self.map_file_name = None
+        self.reduce_file_name = None
         self.worker_list = None
 
         self.map_request = False
@@ -23,6 +28,16 @@ class WorkerConnectionHandler(Iface):
 
         self.map_pairs_to_process = []
 #        self.lock = Lock()
+
+    def mapPath(self):
+        if self.map_file_name is None:
+            raise ContentNotExistException("WorkerConnectionHandler: Try to get map script path when doesn't exist")
+        return str(self.map_file_name)
+
+    def dataFilePath(self):
+        if self.data_file_name is None:
+            raise ContentNotExistException("WorkerConnectionHandler: Try to get data file path when doesn't exist")
+        return str(self.data_file_name)
 
     def parseWorkerList(self, workerListString):
         list = [1, 2, 3]
