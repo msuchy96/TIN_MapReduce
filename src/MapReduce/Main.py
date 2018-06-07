@@ -2,7 +2,7 @@ from src.MapReduce.Worker.States import MainStates
 from src.MapReduce.Worker.Worker import Worker, EndOfTestException
 
 TESTING = False
-TESTING_STATE = "WAIT_FOR_WORK"
+TESTING_STATE = "WAIT_FOR_MASTER"
 
 
 def main():

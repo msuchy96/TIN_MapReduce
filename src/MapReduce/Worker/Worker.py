@@ -1,18 +1,23 @@
 from _ast import Not
+from logging import Logger
 
-from States import InterruptingStates, MainStates, State
-import ConfigReader, WorkerConnectionHandler, MulticastListener,ThriftClients
+import logging
+
+from src.MapReduce.Worker.States import InterruptingStates, MainStates, State
+
+from src.MapReduce.Worker import ConfigReader, WorkerConnectionHandler, MulticastListener, ThriftClients
+
 from src.MapReduce.Worker.MulticastListener import MasterMulticastListener
 from src.MapReduce.Worker.States.MainStates import WaitingForMasterState
 from src.MapReduce.Worker.ThriftServers import WorkerServer
 
 OUR_IP = "192.168.20.197"
-WORKER_SERVER_PORT = 9090
-#MASTER_IP = "localhost"
-MASTER_SERVER_PORT = 9090
+WORKER_SERVER_PORT = 13000
+MASTER_IP = "192.168.20.163"
+MASTER_SERVER_PORT = 12000
 
 MASTER_MCAST_GROUP = "224.0.0.123"
-MASTER_MCAST_DES_PORT = 9999
+MASTER_MCAST_DES_PORT = 9090
 
 
 
@@ -29,9 +34,27 @@ class Worker:
         self.master_client = \
             ThriftClients.MasterServiceClientConnection()
         self.master_multicast = MasterMulticastListener(mcast_group=MASTER_MCAST_GROUP, my_port=MASTER_MCAST_DES_PORT)
-        self.master_ip = None
-        self.master_server_port = None
+        self.master_ip = None# MASTER_IP
+        self.master_server_port = MASTER_SERVER_PORT
+        self.logger = logging
+        self.logging_init()
 
+    def logging_init(self):
+        logging.basicConfig(level=logging.DEBUG)
+        #self.logger = logging.getLogger("WORKER LOG")
+        #self.logger.setLevel(logging.DEBUG)
+
+    def infoLog(self, msg):
+        logging.info(msg)
+
+    def warningLog(self,msg):
+        logging.warning(msg)
+
+    def debugLog(self, msg):
+        logging.debug(msg)
+
+    def fatalError(self, msg):
+        logging.critical(msg)
 
     def runWorker(self, testing=False):
         if not testing:
@@ -73,7 +96,7 @@ class Worker:
     def closeAllResources(self):
         self.master_multicast.close()
 
-    def ismapRequested(self):
+    def isMapRequested(self):
         return self.worker_con_handler.isMapRequested()
 
     def isMasterLive(self):

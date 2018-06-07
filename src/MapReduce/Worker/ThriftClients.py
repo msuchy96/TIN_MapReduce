@@ -1,9 +1,21 @@
+from ipaddress import ip_address
+from uu import encode
 
 from thrift import Thrift
 from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
+
+from src.MapReduce.MasterServices.ttypes import InvalidState
 from ..MasterServices import MapReduceMaster
+import socket
+
+
+class MasterRefuseConnection(Exception):
+    pass
+
+class RegisterWorkerException(Exception):
+    pass
 
 class ClientThriftConnection:
     def __init__(self):
@@ -38,14 +50,22 @@ class MasterServiceClientConnection(ClientThriftConnection):
 #    def __init__(self, server_ip, server_port):
 #        super.__init__(self, server_port, server_ip)
 
-#    def __init__(self):
-#        super.__init__(self)
+    def __init__(self):
+        ClientThriftConnection.__init__(self)
 
     def createClient(self):
         self.thrift_client = MapReduceMaster.Client(self.protocol)
 
     def registerWorker(self, worker_server_ip, worker_server_port):
-        self.thrift_client.RegisterWorker(worker_server_ip, worker_server_port)
+        try:
+            accept = self.thrift_client.RegisterWorker(socket.htonl(int(ip_address(socket.inet_aton(worker_server_ip))))-0xFFFFFFFF , worker_server_port)
+            #cholerny Python - tyle kombinowania, zeby z uinta zrobic inta ....
+
+            if not accept:
+                raise MasterRefuseConnection("Master refuse Thrift connection from us")
+        except InvalidState as e:
+            print(e)
+            raise RegisterWorkerException("Error during worker registering")
 
     def reconnect(self):
         self.thrift_client.Reconnect()

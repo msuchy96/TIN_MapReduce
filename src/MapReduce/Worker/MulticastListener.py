@@ -1,7 +1,7 @@
 import socket
 import struct
 
-import thread
+
 
 import copy
 
@@ -41,11 +41,9 @@ class MulticastListener:
         self.socket.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
     def receive(self):
-        (msg, sender_addr) = self.socket.recvfrom(BUF_SIZE)
-        ret_msg = copy.deepcopy(msg)
+        msg, sender = self.socket.recvfrom(BUF_SIZE)
         self.buffer.append(msg)
-        #msg = "dupa"
-        return ret_msg, sender_addr #ostatni element, czyli ten co dodalismy
+        return msg, sender #ostatni element, czyli ten co dodalismy
 
 
     def close(self):
@@ -62,12 +60,19 @@ class MasterMulticastListener(MulticastListener):
         self.NEW_MASTER_COM = "IAMNEWMASTER"
         self.listening_thread = None
     '''
+    Po to, aby watek nasluchujacy mogl wywolac receive
+    '''
+    def __call__(self, *args, **kwargs):
+        while 1:
+            self.receive()
+
+    '''
     Uruchamia watek sluchajacy czy nie nadejdzie komunikat ze master zginal 
     '''
     def runListeningThread(self):
         if self.listening_thread is not None:
             raise TwiceThreadRunningException("MasterMulticastListener: Try to run next listenign thread")
-        self.listening_thread = Thread(target=self.receive())
+        self.listening_thread = Thread(group=None, target=self, name='Multicast Listener Thread')
         self.listening_thread.start()
 
 
@@ -76,15 +81,17 @@ class MasterMulticastListener(MulticastListener):
     Ponadto zapisuje, jesli nadejdzie wiadomosc, ze master umarl, i nalezy go zastapic(jezeli oczywiscie zginal)
     '''
     def receive(self):
-        (msg, sender) = MulticastListener.receive(self)
-        print(msg)
-        if msg is not None and msg == self.NEW_MASTER_COM : #and self.master_lived is not None and self.master_lived is True:
+        msg, sender = MulticastListener.receive(self)
+        #print(msg)
+        if msg == self.NEW_MASTER_COM and self.master_lived is not None and self.master_lived is True:
 
             #stary master padl - zapisz adres nowego mastera
             self.mutex.acquire()  # SK
-            self.new_master_adress = sender
+            self.new_master_adress = sender[0]
             self.master_lived = False
             self.mutex.release()#END SK
+
+        return msg, sender
 
     def getAdressOfNewMaster(self):
         self.mutex.acquire()#SK
