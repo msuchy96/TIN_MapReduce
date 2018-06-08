@@ -150,11 +150,12 @@ public class JavaWorker {
 
                 System.out.println("CLIENT: Send Results");
                 for(Pair<String,String> pair: dataSyncWrapper.getResultList()) {
-                    //client.RegisterResult(pair.left, pair.right);
+                    client.RegisterResult(pair.left, pair.right);
                 }
                 transport.close();
                 System.out.println("CLIENT: Connection closed.");
-
+                
+                System.exit(1);
             } catch (TException e) {
                 System.out.println("CLIENT: Thrift Exception occurred!");
                 e.printStackTrace();

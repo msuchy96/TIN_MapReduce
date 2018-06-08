@@ -14,7 +14,7 @@ import java.net.SocketAddress;
 public class MulticastReceiver extends Thread {
     protected MulticastSocket socket = null;
     protected byte[] buf = new byte[256];
-    private static final String MASTER_WELCOME = "HELLOIMMASTER";
+    private static final String MASTER_WELCOME = "HELLOWORKERS";
     private Boolean masterReadiness;
     private WorkerConfiguration workerConfiguration;
 

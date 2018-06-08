@@ -54,7 +54,7 @@ public class WorkerListManager {
     }
 
     private Integer calculateId(String key){
-        return hashFunction(key) % numberOfWorkers;
+        return (hashFunction(key) % numberOfWorkers + numberOfWorkers) % numberOfWorkers;
     }
 
     private Integer hashFunction(String s){
@@ -63,6 +63,10 @@ public class WorkerListManager {
             hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
         }
         return (int)hash;
+    }
+
+    public List<ClientListeningInfo> getClientListeningInfoList(){
+        return workersConfigurationList;
     }
 
 
