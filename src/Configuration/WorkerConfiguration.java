@@ -2,13 +2,18 @@ package Configuration;
 
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
 /**
- * Created by suchy on 02.06.2018.
+ * Created by msuchock on 02.06.2018.
  */
 public class WorkerConfiguration {
 
@@ -27,7 +32,7 @@ public class WorkerConfiguration {
         return multicastGroupAddress;
     }
 
-    public void setMulticastGroupAddress(String multicastGroupAddress) {
+    private void setMulticastGroupAddress(String multicastGroupAddress) {
         this.multicastGroupAddress = multicastGroupAddress;
     }
 
@@ -35,7 +40,7 @@ public class WorkerConfiguration {
         return multicastGroupPort;
     }
 
-    public void setMulticastGroupPort(Integer multicastGroupPort) {
+    private void setMulticastGroupPort(Integer multicastGroupPort) {
         this.multicastGroupPort = multicastGroupPort;
     }
 
@@ -43,7 +48,7 @@ public class WorkerConfiguration {
         return listeningPort;
     }
 
-    public void setListeningPort(Integer listeningPort) {
+    private void setListeningPort(Integer listeningPort) {
         this.listeningPort = listeningPort;
     }
 
@@ -51,17 +56,17 @@ public class WorkerConfiguration {
         return ip;
     }
 
-    public void setIp(String ip) throws UnknownHostException {
+    private void setIp(String ip) throws UnknownHostException {
         this.ip = ip;
         ipToInt(InetAddress.getByName(ip));
     }
 
-    public Integer getIpInt(){
+    public Integer getIpInt() {
         return ipInt;
     }
 
-    public void ipToInt(InetAddress ipAddr) {
-        byte [] bytes = ipAddr.getAddress();
+    private void ipToInt(InetAddress ipAddr) {
+        byte[] bytes = ipAddr.getAddress();
         ArrayUtils.reverse(bytes);
         ipInt = ByteBuffer.wrap(bytes).getInt();
     }
@@ -70,7 +75,7 @@ public class WorkerConfiguration {
         return masterPort;
     }
 
-    public void setMasterPort(Integer masterPort) {
+    private void setMasterPort(Integer masterPort) {
         this.masterPort = masterPort;
     }
 
@@ -78,33 +83,56 @@ public class WorkerConfiguration {
         return pythonPath;
     }
 
-    public void setPythonPath(String pythonPath){
+    private void setPythonPath(String pythonPath) {
         this.pythonPath = pythonPath;
     }
 
-    public String getDataStoragePath(){
+    public String getDataStoragePath() {
         return dataStoragePath;
     }
 
-    public void setDataStoragePath(String dataStoragePath){
+    private void setDataStoragePath(String dataStoragePath) {
         this.dataStoragePath = dataStoragePath;
     }
 
-    public Integer getBufferSize(){
+    public Integer getBufferSize() {
         return bufferSize;
     }
 
-    public void setBufferSize(Integer bufferSize){
+    private void setBufferSize(Integer bufferSize) {
         this.bufferSize = bufferSize;
     }
 
-    public String getMasterIp(){
+    public String getMasterIp() {
         return masterIp;
     }
 
-    public void setMasterIp(String masterIp){
+    public void setMasterIp(String masterIp) {
         this.masterIp = masterIp;
     }
 
+    public void loadConfiguration() {
+        try {
+            JSONParser parser = new JSONParser();
 
+            JSONObject a = (JSONObject) parser.parse(new FileReader("G:/ProjektyELKA/TIN/src/Configuration/sources/config.json"));
+
+            setMulticastGroupAddress((String) a.get("multicastGroupAddress"));
+            setMulticastGroupPort((int) (long) a.get("multicastGroupPort"));
+            setListeningPort((int) (long) a.get("ListeningPort"));
+            setIp((String) a.get("ip"));
+            setMasterPort((int) (long) a.get("masterPort"));
+            setPythonPath((String) a.get("pythonPath"));
+            setDataStoragePath((String) a.get("dataStoragePath"));
+            setBufferSize((int) (long) a.get("bufferSize"));
+
+        } catch (IOException e) {
+            System.out.println("File not found!");
+            e.printStackTrace();
+        } catch (ParseException e) {
+            System.out.println("Parse exception occurred found!");
+            e.printStackTrace();
+        }
+
+    }
 }

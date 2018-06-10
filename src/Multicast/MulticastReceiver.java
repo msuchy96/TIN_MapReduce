@@ -9,11 +9,10 @@ import java.net.MulticastSocket;
 import java.net.SocketAddress;
 
 /**
- * Created by suchy on 28.05.2018.
+ * Created by msuchock on 28.05.2018.
  */
 public class MulticastReceiver extends Thread {
-    protected MulticastSocket socket = null;
-    protected byte[] buf = new byte[256];
+    private byte[] buf = new byte[256];
     private static final String MASTER_WELCOME = "HELLOWORKERS";
     private Boolean masterReadiness;
     private WorkerConfiguration workerConfiguration;
@@ -26,7 +25,7 @@ public class MulticastReceiver extends Thread {
 
     public void run() {
         try{
-            socket = new MulticastSocket(workerConfiguration.getMulticastGroupPort());
+            MulticastSocket socket = new MulticastSocket(workerConfiguration.getMulticastGroupPort());
             InetAddress group = InetAddress.getByName(workerConfiguration.getMulticastGroupAddress());
             socket.joinGroup(group);
             System.out.println("Joined multicast group");

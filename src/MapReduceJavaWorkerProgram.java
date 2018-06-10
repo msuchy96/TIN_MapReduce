@@ -1,10 +1,9 @@
-import Configuration.ConfigurationManager;
 import Configuration.WorkerConfiguration;
 import JavaWorker.JavaWorker;
 import Multicast.MulticastReceiver;
 
 /**
- * Created by suchy on 28.05.2018.
+ * Created by msuchock on 28.05.2018.
  */
 public class MapReduceJavaWorkerProgram {
     public static void main(String[] args) {
@@ -12,7 +11,7 @@ public class MapReduceJavaWorkerProgram {
         System.out.println("MapReduceJavaWorkerProgram started");
 
         WorkerConfiguration workerConfiguration = new WorkerConfiguration();
-        ConfigurationManager.loadConfiguration(workerConfiguration);
+        workerConfiguration.loadConfiguration();
         System.out.println("Configuration loaded");
 
         MulticastReceiver multicastReceiver = new MulticastReceiver(workerConfiguration);
@@ -25,7 +24,6 @@ public class MapReduceJavaWorkerProgram {
             JavaWorker worker = new JavaWorker(workerConfiguration);
             worker.start();
         }
-
-
+        System.out.println("Program finished.");
     }
 }

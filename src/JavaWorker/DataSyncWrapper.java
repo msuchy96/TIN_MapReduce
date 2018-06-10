@@ -11,13 +11,12 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * Created by suchy on 31.05.2018.
+ * Created by msuchock on 31.05.2018.
  */
 public class DataSyncWrapper {
 
     private BlockingQueue<Pair<String,Integer>> registerWorkersQueue;
     private Boolean endOfRegisterWorkersQueue;
-    private BlockingQueue<Boolean> finishReduce;
     private Map<String,List<Integer>> myKeyValuesMap;
     private BlockingQueue<Pair<String,String>> resultList;
     private List<ClientListeningInfo> workersConfigurationList;
@@ -28,9 +27,8 @@ public class DataSyncWrapper {
         registerWorkersQueue = new ArrayBlockingQueue<>(100);
         myKeyValuesMap = new HashMap<>();
         resultList = new ArrayBlockingQueue<>(100);
-        finishReduce = new ArrayBlockingQueue<>(1);
         workersConfigurationList = new ArrayList<>();
-        serverActionFlag = new ArrayBlockingQueue<>(100);
+        serverActionFlag = new ArrayBlockingQueue<>(5);
     }
 
     public synchronized void setEndOfRegisterWorkersQueue(Boolean end){
@@ -49,30 +47,8 @@ public class DataSyncWrapper {
         registerWorkersQueue.put(pair);
     }
 
-    public void reduceFinished(){
-        try{
-            finishReduce.put(true);
-        }catch (InterruptedException e){
-            System.out.println("Execption occureed during finishReduce");
-            e.printStackTrace();
-        }
-    }
-
-    public void waitForFinishReduce(){
-        try{
-            finishReduce.take();
-        }catch (InterruptedException e){
-            System.out.println("Execption occureed during finishReduce");
-            e.printStackTrace();
-        }
-    }
-
     public Pair<String,Integer> takeFromRegisterWorkersQueue() throws InterruptedException{
         return registerWorkersQueue.take();
-    }
-
-    public BlockingQueue<Pair<String,Integer>> getRegisterWorkersQueue() throws InterruptedException{
-        return registerWorkersQueue;
     }
 
     public synchronized void addToMyKeyValuesMap(Pair<String,Integer> kVE){
@@ -83,7 +59,6 @@ public class DataSyncWrapper {
             newValuesList.add(kVE.right);
             myKeyValuesMap.put(kVE.left,newValuesList);
         }
-
     }
 
     public synchronized Map<String,List<Integer>> getMyKeyValuesMap(){
@@ -107,7 +82,7 @@ public class DataSyncWrapper {
 
     }
 
-    public void endOfAction(Boolean bool) throws InterruptedException{
+    public void endOfServerAction(Boolean bool) throws InterruptedException{
         serverActionFlag.put(bool);
     }
 

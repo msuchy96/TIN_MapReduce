@@ -18,12 +18,9 @@ import java.util.Random;
  */
 
 public class MapReduceWorkerHandler implements MapReduceWorker.Iface {
-    private String dataFileName;
-    private String mapFileName;
-    private String reduceFileName;
     private PythonRunner pyRunner;
     private DataSyncWrapper dataSyncWrapper;
-    WorkerConfiguration workerConfiguration;
+    private WorkerConfiguration workerConfiguration;
 
     public MapReduceWorkerHandler(DataSyncWrapper dataSyncWrapper, WorkerConfiguration workerConfiguration){
         this.dataSyncWrapper = dataSyncWrapper;
@@ -31,18 +28,16 @@ public class MapReduceWorkerHandler implements MapReduceWorker.Iface {
     }
 
     public boolean AssignWork(String dataFileName, String mapFileName, String reduceFileName, List<ClientListeningInfo> workersList) {
-        this.dataFileName = dataFileName;
-        this.mapFileName = mapFileName;
-        this.reduceFileName = reduceFileName;
+
         dataSyncWrapper.setWorkersConfigurationListList(workersList);
         pyRunner = new PythonRunner(dataFileName, mapFileName, reduceFileName, workerConfiguration.getDataStoragePath(), workerConfiguration.getPythonPath());
 
-        System.out.println("SERVER: Get data: " + this.dataFileName + " map: " + this.mapFileName + " reduce: " + this.reduceFileName);
+        System.out.println("SERVER: Get data: " + dataFileName + " map: " + mapFileName + " reduce: " + reduceFileName);
         System.out.println("SERVER: Workers:");
         workersList.forEach(x -> System.out.println(x.toString()));
         try{
             System.out.println("SERVER: Work assigned!");
-            dataSyncWrapper.endOfAction(true);
+            dataSyncWrapper.endOfServerAction(true);
         } catch(InterruptedException e){
             System.out.println("SERVER: InterruptedException occurred while syncing action between server and client");
             e.printStackTrace();
@@ -74,9 +69,8 @@ public class MapReduceWorkerHandler implements MapReduceWorker.Iface {
         System.out.println("SERVER: Reduce begins");
         try{
             pyRunner.reduce(dataSyncWrapper);
-            synchronized (dataSyncWrapper){
-                dataSyncWrapper.reduceFinished();
-            }
+            dataSyncWrapper.endOfServerAction(true);
+
             return true;
         } catch(IOException e){
             System.out.println("SERVER: IO Exception occurred in PythonRunner");

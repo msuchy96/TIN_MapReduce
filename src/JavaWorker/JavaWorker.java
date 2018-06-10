@@ -29,7 +29,7 @@ import org.slf4j.*;
 
 
 /**
- * Created by suchy on 28.05.2018.
+ * Created by msuchock on 28.05.2018.
  */
 
 public class JavaWorker {
@@ -80,7 +80,7 @@ public class JavaWorker {
                 TServerTransport serverTransport = new TServerSocket(new InetSocketAddress(workerConfiguration.getIp(),workerConfiguration.getListeningPort()));
                 TServer server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(processor));
                 System.out.println("SERVER: Configuration ended.");
-                dataSyncWrapper.endOfAction(true);
+                dataSyncWrapper.endOfServerAction(true);
 
                 System.out.println("SERVER: Starting the worker server...");
                 server.serve(); // infinite loop inside
@@ -142,16 +142,18 @@ public class JavaWorker {
                 System.out.println("CLIENT: Finish Map");
                 client.FinishedMap();
 
-                System.out.println("CLIENT: Waiting for start reduce...");
-                dataSyncWrapper.waitForFinishReduce();
+                System.out.println("CLIENT: Waiting for finishing reduce...");
+                dataSyncWrapper.waitForServer();
+                System.out.println("CLIENT: Reduce Finished");
+
+                System.out.println("CLIENT: Sending results...");
+                for(Pair<String,String> pair: dataSyncWrapper.getResultList()) {
+                    client.RegisterResult(pair.left, pair.right);
+                }
 
                 System.out.println("CLIENT: Finish Reduce");
                 client.FinishedReduce();
 
-                System.out.println("CLIENT: Send Results");
-                for(Pair<String,String> pair: dataSyncWrapper.getResultList()) {
-                    client.RegisterResult(pair.left, pair.right);
-                }
                 transport.close();
                 System.out.println("CLIENT: Connection closed.");
                 
@@ -160,7 +162,7 @@ public class JavaWorker {
                 System.out.println("CLIENT: Thrift Exception occurred!");
                 e.printStackTrace();
             } catch (InterruptedException e) {
-                System.out.println("CLIENT: Exception occurred during waiting for map results");
+                System.out.println("CLIENT: Exception occurred during waiting for map or reduce results");
                 e.printStackTrace();
             }
         }
