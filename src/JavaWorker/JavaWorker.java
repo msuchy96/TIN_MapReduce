@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.concurrent.*;
 import org.slf4j.*;
 
-
 /**
  * Created by msuchock on 28.05.2018.
  */
@@ -43,8 +42,6 @@ public class JavaWorker {
     public void start(){
         // creates fixed thread pool
         ExecutorService pool = Executors.newFixedThreadPool(2);
-
-
         DataSyncWrapper dataSyncWrapper = new DataSyncWrapper();
         try{
             // server runnable thread starts to execute
@@ -60,15 +57,14 @@ public class JavaWorker {
         }
     }
 
-    protected static class ServerCallClass implements Runnable
-    {
+    protected static class ServerCallClass implements Runnable {
         DataSyncWrapper dataSyncWrapper;
         WorkerConfiguration workerConfiguration;
 
         public static MapReduceWorkerHandler handler;
         public static MapReduceWorker.Processor processor;
 
-        private ServerCallClass(DataSyncWrapper dataSyncWrapper, WorkerConfiguration workerConfiguration) {
+        private ServerCallClass(DataSyncWrapper dataSyncWrapper, WorkerConfiguration workerConfiguration){
             this.dataSyncWrapper = dataSyncWrapper;
             this.workerConfiguration = workerConfiguration;
         }
@@ -96,8 +92,7 @@ public class JavaWorker {
         }
     }
 
-    protected class ClientCallClass implements Runnable
-    {
+    protected class ClientCallClass implements Runnable {
         DataSyncWrapper dataSyncWrapper;
         WorkerConfiguration workerConfiguration;
 

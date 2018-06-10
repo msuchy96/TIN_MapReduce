@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
-
 /**
  * Created by msuchock on 27.05.2018.
  */

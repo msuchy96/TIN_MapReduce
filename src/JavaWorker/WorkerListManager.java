@@ -10,7 +10,6 @@ import java.util.*;
  * Created by msuchock on 31.05.2018.
  */
 
-
 public class WorkerListManager {
     private Map<Integer,Map<Pair<String,Integer>,KeyValueEntity>> keyValueEntityMap;
     private Integer numberOfWorkers;
