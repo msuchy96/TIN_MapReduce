@@ -28,6 +28,10 @@ public class WorkerConfiguration {
     private String masterIp;
     private Integer ipInt;
 
+    public WorkerConfiguration(){
+        loadConfiguration();
+    }
+
     public String getMulticastGroupAddress() {
         return multicastGroupAddress;
     }

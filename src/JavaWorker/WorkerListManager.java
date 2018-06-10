@@ -13,8 +13,8 @@ import java.util.*;
 
 public class WorkerListManager {
     private Map<Integer,Map<Pair<String,Integer>,KeyValueEntity>> keyValueEntityMap;
-    private List<ClientListeningInfo> workersConfigurationList;
     private Integer numberOfWorkers;
+    private List<ClientListeningInfo> workersConfigurationList;
 
     public WorkerListManager(Integer numberOfWorkers, List<ClientListeningInfo> workersConfigurationList){
         this.keyValueEntityMap = new HashMap<>();
@@ -48,8 +48,6 @@ public class WorkerListManager {
         }
         return keyValueEntityList;
     }
-
-
 
     public ClientListeningInfo getClientListeningInfo(int index){
         return workersConfigurationList.get(index);

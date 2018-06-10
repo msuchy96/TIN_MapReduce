@@ -49,11 +49,11 @@ public class PythonRunner {
             System.out.println("Pair result from map: " + resultPair[0]+"=>"+resultPair[1]);
             // to avoid sync problem with end of the
             synchronized (dataSyncWrapper){
-                dataSyncWrapper.putInRegisterWorkersQueue(new Pair<>(resultPair[0],Integer.valueOf(resultPair[1])));
+                dataSyncWrapper.putInPairsAfterMapQueue(new Pair<>(resultPair[0],Integer.valueOf(resultPair[1])));
                 if(!reader.ready()){
-                    dataSyncWrapper.setEndOfRegisterWorkersQueue(true);
+                    dataSyncWrapper.setEndPairsAfterMapQueue(true);
                 }
-                dataSyncWrapper.endOfServerAction(true);
+                //dataSyncWrapper.endOfServerAction(true);  - TODO: SHOULD WORK WITHOUT IT
             }
         }
     }

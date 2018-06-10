@@ -28,7 +28,6 @@ public class MapReduceWorkerHandler implements MapReduceWorker.Iface {
     }
 
     public boolean AssignWork(String dataFileName, String mapFileName, String reduceFileName, List<ClientListeningInfo> workersList) {
-
         dataSyncWrapper.setWorkersConfigurationListList(workersList);
         pyRunner = new PythonRunner(dataFileName, mapFileName, reduceFileName, workerConfiguration.getDataStoragePath(), workerConfiguration.getPythonPath());
 

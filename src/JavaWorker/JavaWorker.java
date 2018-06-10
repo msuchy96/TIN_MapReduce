@@ -131,9 +131,9 @@ public class JavaWorker {
                 WorkerListManager workerListManager = new WorkerListManager(dataSyncWrapper.getWorkersConfigurationList().size(), dataSyncWrapper.getWorkersConfigurationList());
 
                 //takes from workersQueue till the end (python putting)
-                while (!dataSyncWrapper.IsEndOfRegisterWorkersQueue() || !dataSyncWrapper.isRegisterWorkersQueueEmpty()) {
-                    workerListManager.add(dataSyncWrapper.takeFromRegisterWorkersQueue());
-                    dataSyncWrapper.waitForServer();
+                while (!dataSyncWrapper.IsEndOfPairsAfterMapQueue() || !dataSyncWrapper.isPairsAfterMapQueueEmpty()) {
+                    workerListManager.add(dataSyncWrapper.takeFromPairsAfterMapQueue());
+                    //dataSyncWrapper.waitForServer(); - TODO: SHOULD WORK WITHOUT IT
                 }
 
                 System.out.println("CLIENT: Sending to workers and waiting for all threads...");
@@ -168,17 +168,17 @@ public class JavaWorker {
         }
 
         private void sendToWorkersAndWait(WorkerListManager workerListManager){
-            List<Future<String>> threadListToWairFor = new ArrayList<>();
-            ExecutorService executor= Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+            List<Future<String>> threadListToWaitFor = new ArrayList<>();
+            ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
             try{
                 for (Integer workerId: workerListManager.getKeyValueEntityMap().keySet()){
                     ClientListeningInfo clientInfo = workerListManager.getClientListeningInfo(workerId);
                     NewThread newThread = new NewThread(clientInfo.getPort(),clientInfo.getIp(),workerListManager.getKeyValueEntityList(workerId));
                     Future<String> future = executor.submit(newThread);
-                    threadListToWairFor.add(future);
+                    threadListToWaitFor.add(future);
                 }
                 //wait for all threads
-                for(Future<String> fut : threadListToWairFor) {
+                for(Future<String> fut : threadListToWaitFor) {
                     try {
                         //Future.get() waits for task to get completed
                         System.out.println(fut.get());
@@ -227,6 +227,4 @@ public class JavaWorker {
             }
         }
     }
-
-
 }

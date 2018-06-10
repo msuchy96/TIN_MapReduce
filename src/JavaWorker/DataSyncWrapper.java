@@ -14,41 +14,60 @@ import java.util.concurrent.BlockingQueue;
  * Created by msuchock on 31.05.2018.
  */
 public class DataSyncWrapper {
-
-    private BlockingQueue<Pair<String,Integer>> registerWorkersQueue;
-    private Boolean endOfRegisterWorkersQueue;
-    private Map<String,List<Integer>> myKeyValuesMap;
-    private BlockingQueue<Pair<String,String>> resultList;
-    private List<ClientListeningInfo> workersConfigurationList;
     private BlockingQueue<Boolean> serverActionFlag;
+    //assignedWork
+    private List<ClientListeningInfo> workersConfigurationList;
+    //map
+    private BlockingQueue<Pair<String,Integer>> pairsAfterMapQueue;
+    private Boolean endOfPairsFromMapQueue;
+    //registerMapPair
+    private Map<String,List<Integer>> myKeyValuesMap;
+    //reduce
+    private BlockingQueue<Pair<String,String>> resultList;
 
     public DataSyncWrapper(){
-        endOfRegisterWorkersQueue = false;
-        registerWorkersQueue = new ArrayBlockingQueue<>(100);
+        serverActionFlag = new ArrayBlockingQueue<>(5);
+        workersConfigurationList = new ArrayList<>();
+        pairsAfterMapQueue = new ArrayBlockingQueue<>(100);
+        endOfPairsFromMapQueue = false;
         myKeyValuesMap = new HashMap<>();
         resultList = new ArrayBlockingQueue<>(100);
-        workersConfigurationList = new ArrayList<>();
-        serverActionFlag = new ArrayBlockingQueue<>(5);
     }
 
-    public synchronized void setEndOfRegisterWorkersQueue(Boolean end){
-        this.endOfRegisterWorkersQueue = end;
+    public void endOfServerAction(Boolean bool) throws InterruptedException{
+        serverActionFlag.put(bool);
     }
 
-    public synchronized Boolean IsEndOfRegisterWorkersQueue(){
-        return endOfRegisterWorkersQueue;
+    public void waitForServer() throws InterruptedException{
+        serverActionFlag.take();
     }
 
-    public synchronized Boolean isRegisterWorkersQueueEmpty(){
-        return registerWorkersQueue.isEmpty();
+    public synchronized void setWorkersConfigurationListList(List<ClientListeningInfo> workersConfigurationList){
+        this.workersConfigurationList = workersConfigurationList;
     }
 
-    public void putInRegisterWorkersQueue(Pair<String,Integer> pair) throws InterruptedException{
-        registerWorkersQueue.put(pair);
+    public synchronized List<ClientListeningInfo> getWorkersConfigurationList(){
+        return workersConfigurationList;
     }
 
-    public Pair<String,Integer> takeFromRegisterWorkersQueue() throws InterruptedException{
-        return registerWorkersQueue.take();
+    public void putInPairsAfterMapQueue(Pair<String,Integer> pair) throws InterruptedException{
+        pairsAfterMapQueue.put(pair);
+    }
+
+    public Pair<String,Integer> takeFromPairsAfterMapQueue() throws InterruptedException{
+        return pairsAfterMapQueue.take();
+    }
+
+    public synchronized void setEndPairsAfterMapQueue(Boolean end){
+        this.endOfPairsFromMapQueue = end;
+    }
+
+    public synchronized Boolean IsEndOfPairsAfterMapQueue(){
+        return endOfPairsFromMapQueue;
+    }
+
+    public synchronized Boolean isPairsAfterMapQueueEmpty(){
+        return pairsAfterMapQueue.isEmpty();
     }
 
     public synchronized void addToMyKeyValuesMap(Pair<String,Integer> kVE){
@@ -73,21 +92,6 @@ public class DataSyncWrapper {
         return resultList;
     }
 
-    public synchronized void setWorkersConfigurationListList(List<ClientListeningInfo> workersConfigurationList){
-        this.workersConfigurationList = workersConfigurationList;
-    }
 
-    public synchronized List<ClientListeningInfo> getWorkersConfigurationList(){
-        return workersConfigurationList;
-
-    }
-
-    public void endOfServerAction(Boolean bool) throws InterruptedException{
-        serverActionFlag.put(bool);
-    }
-
-    public void waitForServer() throws InterruptedException{
-        serverActionFlag.take();
-    }
 
 }

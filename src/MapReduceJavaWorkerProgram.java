@@ -11,7 +11,6 @@ public class MapReduceJavaWorkerProgram {
         System.out.println("MapReduceJavaWorkerProgram started");
 
         WorkerConfiguration workerConfiguration = new WorkerConfiguration();
-        workerConfiguration.loadConfiguration();
         System.out.println("Configuration loaded");
 
         MulticastReceiver multicastReceiver = new MulticastReceiver(workerConfiguration);
