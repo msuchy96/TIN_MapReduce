@@ -7,31 +7,18 @@ import org.apache.commons.lang3.Pair;
 import java.util.*;
 
 /**
- * Created by suchy on 31.05.2018.
+ * Created by msuchock on 31.05.2018.
  */
-
 
 public class WorkerListManager {
     private Map<Integer,Map<Pair<String,Integer>,KeyValueEntity>> keyValueEntityMap;
-    private List<ClientListeningInfo> workersConfigurationList;
     private Integer numberOfWorkers;
+    private List<ClientListeningInfo> workersConfigurationList;
 
     public WorkerListManager(Integer numberOfWorkers, List<ClientListeningInfo> workersConfigurationList){
         this.keyValueEntityMap = new HashMap<>();
         this.numberOfWorkers = numberOfWorkers;
         this.workersConfigurationList = workersConfigurationList;
-    }
-
-    public Map<Integer,Map<Pair<String,Integer>,KeyValueEntity>> getKeyValueEntityMap(){
-        return keyValueEntityMap;
-    }
-
-    public List<KeyValueEntity> getKeyValueEntityList(Integer workerId){
-        List<KeyValueEntity> keyValueEntityList = new ArrayList<>();
-        for(Pair<String,Integer> pair: keyValueEntityMap.get(workerId).keySet()){
-            keyValueEntityList.add(keyValueEntityMap.get(workerId).get(pair));
-        }
-        return keyValueEntityList;
     }
 
     public synchronized void add(Pair<String,Integer> pair){
@@ -49,6 +36,18 @@ public class WorkerListManager {
         }
     }
 
+    public Map<Integer,Map<Pair<String,Integer>,KeyValueEntity>> getKeyValueEntityMap(){
+        return keyValueEntityMap;
+    }
+
+    public List<KeyValueEntity> getKeyValueEntityList(Integer workerId){
+        List<KeyValueEntity> keyValueEntityList = new ArrayList<>();
+        for(Pair<String,Integer> pair: keyValueEntityMap.get(workerId).keySet()){
+            keyValueEntityList.add(keyValueEntityMap.get(workerId).get(pair));
+        }
+        return keyValueEntityList;
+    }
+
     public ClientListeningInfo getClientListeningInfo(int index){
         return workersConfigurationList.get(index);
     }
@@ -63,10 +62,6 @@ public class WorkerListManager {
             hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
         }
         return (int)hash;
-    }
-
-    public List<ClientListeningInfo> getClientListeningInfoList(){
-        return workersConfigurationList;
     }
 
 

@@ -4,39 +4,25 @@ import JavaWorker.DataSyncWrapper;
 import org.apache.commons.lang3.Pair;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 
-
 /**
- * Created by suchy on 29.05.2018.
+ * Created by msuchock on 29.05.2018.
  */
 public class PythonRunner {
-    private static String dataFilePath;
-    private static String pythonMapPath;
-    private static String pythonReducePath;
-    private static String pythonPath;
-    public ArrayList<Pair<String,Integer>> mapResults;
+    private String dataFilePath;
+    private String pythonMapPath;
+    private String pythonReducePath;
+    private String pythonPath;
 
-    public ArrayList<Pair<String,Integer>> getMapResults(){
-        return mapResults;
-    }
-
-    public PythonRunner(String dataFile, String mapFile, String reduceFile, String sourceFilePath, String pythonPath){
+    public PythonRunner(String dataFile, String mapFile, String reduceFile, String sourceFilePath, String pythonExePath){
         dataFilePath = sourceFilePath + dataFile;
         pythonMapPath = sourceFilePath + mapFile;
         pythonReducePath = sourceFilePath + reduceFile;
-        this.pythonPath = pythonPath;
+        pythonPath = pythonExePath;
     }
 
-    public void map(DataSyncWrapper dataSyncWrapper) throws FileNotFoundException,IOException, InterruptedException{
-
-        //zakladamy dla uproszczenia, ze:
-        //wywolujemy skrypt pythonowy, ktory czyta z wejscia standardowego
-        //na wejscie standardowe MY wrzucamy dane z dataFile
-        //a wyniki ma wypluwac na stdout w postaci KLUCZ=>WARTOSC, gdzie wartosc musi dac sie sparsowac na inta, klucz dowolny(string)
-
-
+    public void map(DataSyncWrapper dataSyncWrapper) throws IOException, InterruptedException{
         Process process = createProcess(pythonMapPath);
 
         OutputStream stdin = process.getOutputStream(); // The Process OuputStream (our point of view) is the STDIN from the process point of view
@@ -61,11 +47,11 @@ public class PythonRunner {
             System.out.println("Pair result from map: " + resultPair[0]+"=>"+resultPair[1]);
             // to avoid sync problem with end of the
             synchronized (dataSyncWrapper){
-                dataSyncWrapper.putInRegisterWorkersQueue(new Pair<>(resultPair[0],Integer.valueOf(resultPair[1])));
+                dataSyncWrapper.putInPairsAfterMapQueue(new Pair<>(resultPair[0],Integer.valueOf(resultPair[1])));
                 if(!reader.ready()){
-                    dataSyncWrapper.setEndOfRegisterWorkersQueue(true);
+                    dataSyncWrapper.setEndPairsAfterMapQueue(true);
                 }
-                dataSyncWrapper.endOfAction(true);
+                dataSyncWrapper.endOfServerAction(true);
             }
         }
     }
@@ -94,10 +80,10 @@ public class PythonRunner {
                 System.out.println("Pair result from reduce: " + key + "=>" + result);
             }
         }
-        dataSyncWrapper.reduceFinished();
+        dataSyncWrapper.endOfServerAction(true);
     }
 
-    private static Process createProcess(String pythonFunctionPath) throws IOException{
+    private Process createProcess(String pythonFunctionPath) throws IOException{
         ProcessBuilder pb = new ProcessBuilder(Arrays.asList(pythonPath, pythonFunctionPath));
         pb.redirectErrorStream(true);
         pb.redirectInput();
