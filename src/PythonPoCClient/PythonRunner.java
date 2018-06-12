@@ -4,7 +4,6 @@ import JavaWorker.DataSyncWrapper;
 import org.apache.commons.lang3.Pair;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -52,7 +51,7 @@ public class PythonRunner {
                 if(!reader.ready()){
                     dataSyncWrapper.setEndPairsAfterMapQueue(true);
                 }
-                //dataSyncWrapper.endOfServerAction(true);  - TODO: SHOULD WORK WITHOUT IT
+                dataSyncWrapper.endOfServerAction(true);
             }
         }
     }

@@ -8,9 +8,10 @@ import Multicast.MulticastReceiver;
 public class MapReduceJavaWorkerProgram {
     public static void main(String[] args) {
 
+        String src = "G:/ProjektyELKA/TIN/src/Configuration/sources/config.json";
         System.out.println("MapReduceJavaWorkerProgram started");
 
-        WorkerConfiguration workerConfiguration = new WorkerConfiguration();
+        WorkerConfiguration workerConfiguration = new WorkerConfiguration(src);
         System.out.println("Configuration loaded");
 
         MulticastReceiver multicastReceiver = new MulticastReceiver(workerConfiguration);

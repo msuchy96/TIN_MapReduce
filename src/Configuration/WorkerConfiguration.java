@@ -28,8 +28,8 @@ public class WorkerConfiguration {
     private String masterIp;
     private Integer ipInt;
 
-    public WorkerConfiguration(){
-        loadConfiguration();
+    public WorkerConfiguration(String src){
+        loadConfiguration(src);
     }
 
     public String getMulticastGroupAddress() {
@@ -115,11 +115,11 @@ public class WorkerConfiguration {
         this.masterIp = masterIp;
     }
 
-    public void loadConfiguration() {
+    public void loadConfiguration(String src) {
         try {
             JSONParser parser = new JSONParser();
 
-            JSONObject a = (JSONObject) parser.parse(new FileReader("G:/ProjektyELKA/TIN/src/Configuration/sources/config.json"));
+            JSONObject a = (JSONObject) parser.parse(new FileReader(src));
 
             setMulticastGroupAddress((String) a.get("multicastGroupAddress"));
             setMulticastGroupPort((int) (long) a.get("multicastGroupPort"));
