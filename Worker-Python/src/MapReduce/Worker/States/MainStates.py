@@ -5,6 +5,9 @@ from src.MapReduce.Worker.ThriftClients import MasterRefuseConnection, RegisterW
 class NotImplemented(Exception):
     pass
 
+class EndOfWork(ChangingStateException):
+    pass
+
 
 class WaitingForMasterState(InterruptableState):
     def __init__(self, worker_ref):
@@ -70,8 +73,6 @@ class MasterConnectedState(OneShotState):
         raise ChangingStateException("WAIT_FOR_WORK")
 
 
-
-
 class WaitForWorkState(InterruptableState):
     def __init__(self, worker_ref):
         InterruptableState.__init__(self, worker_ref)
@@ -93,10 +94,10 @@ class PrepareAndRunMap(OneShotState):
         OneShotState.__init__(self, worker_ref)
 
     def handleState(self):
-        self.worker_ref.runMapProcess(self.worker_ref.mapPath(), self.worker_ref.dataToMapPath(), self.worker_ref.afterMapDataPath() )
+        self.worker_ref.runMapProcess()
         self.worker_ref.infoLog("Run Map")
-        self.worker_ref.runPairManager()
-        self.worker_ref.infoLog("//Not implemented// Run after-map pair manager")
+        self.worker_ref.runMapPairManager()
+        self.worker_ref.infoLog("Run after-map pair manager")
 
         raise ChangingStateException("MAP_STEP")
 
@@ -110,17 +111,35 @@ class MapStepState(InterruptableState):
             self.worker_ref.warningLog("Master is dead. Try to connect with another")
             raise NotImplemented("Wait for work")
 
-        if self.worker_ref.isMapProcessEnd() and self.worker_ref.isPairManagerEnd():
+        if self.worker_ref.isMapProcessEnd() and self.worker_ref.isMapPairManagerEnd():
+            self.worker_ref.finishedMap()
             raise ChangingStateException("WAIT_FOR_REDUCE")
 
         #raise NotImplemented("Map Step State")
 
 class WaitForReduceState(InterruptableState):
     def __init__(self, worker_ref):
-        InterruptableState.__init__(worker_ref)
+        InterruptableState.__init__(self, worker_ref)
 
     def handleState(self):
-        pass
+        if not self.isMasterLive():
+            self.worker_ref.warningLog("Master is dead. Try to connect with another")
+            raise NotImplemented("Wait for work")
+
+        reduce_request = self.worker_ref.isReduceRequested()
+        if reduce_request:
+            raise ChangingStateException("PREPARE_AND_RUN_REDUCE")
+
+class PrepareAndRunReduce(OneShotState):
+    def __init__(self, worker_ref):
+        OneShotState.__init__(self, worker_ref)
+
+    def handleState(self):
+        self.worker_ref.runReducePairManager()
+        self.worker_ref.infoLog(" Run reduce pair manager")
+
+        raise ChangingStateException("REDUCE_STEP")
+
 
 
 class ReduceStepState(InterruptableState):
@@ -128,15 +147,40 @@ class ReduceStepState(InterruptableState):
         InterruptableState.__init__(self, worker_ref)
 
     def handleState(self):
-        pass
+        if not self.isMasterLive():
+            self.worker_ref.warningLog("Master is dead. Try to connect with another")
+            raise NotImplemented("Wait for work")
+
+        if self.worker_ref.isReducePairManagerEnd():
+            #powiadom mastera o zakonczneiu reduce
+            self.worker_ref.infoLog("Reduce step has ended. All data were procceded")
+
+            self.worker_ref.finishedReduce()
+
+            self.worker_ref.infoLog("Master confirmed about end of work")
+            raise ChangingStateException("END_PROCESSING")
 
 
-class SendResultsToMasterState(InterruptableState):
+class EndProcessingState(OneShotState):
     def __init__(self, worker_ref):
-        InterruptableState.__init__(self, worker_ref)
+        OneShotState.__init__(self, worker_ref)
 
     def handleState(self):
-        pass
+        self.worker_ref.infoLog("Resetting worker")
+        self.worker_ref.resetWorker()
+        self.worker_ref.infoLog("Worker's devices all resetted")
+        #self.worker_ref.infoLog("Jump to Listening for Master")
+        raise ChangingStateException("CLOSE_STATE")
+
+class CloseState(OneShotState):
+    def __init__(self, worker_ref):
+        OneShotState.__init__(self, worker_ref)
+
+    def handleState(self):
+        self.worker_ref.infoLog("Close Worker")
+
+        raise EndOfWork()
+
 
 state_map = {
     "WAIT_FOR_MASTER": WaitingForMasterState,
@@ -147,6 +191,8 @@ state_map = {
     "PREPARE_AND_RUN_MAP": PrepareAndRunMap,
     "MAP_STEP": MapStepState,
     "WAIT_FOR_REDUCE": WaitForReduceState,
+    "PREPARE_AND_RUN_REDUCE": PrepareAndRunReduce,
     "REDUCE_STEP": ReduceStepState,
-    "SEND_RESULTS_TO_MASTER": SendResultsToMasterState
+    "END_PROCESSING": EndProcessingState,
+    "CLOSE_STATE":CloseState
 }

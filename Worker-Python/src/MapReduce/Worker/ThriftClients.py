@@ -35,7 +35,7 @@ class ClientThriftConnection:
         self.transport.open()
         self.createClient()
 
-    def cloneConnection(self):
+    def closeConnection(self):
         self.transport.close()
 
 
@@ -72,11 +72,7 @@ class WorkerServiceClient(ClientThriftConnection):
         return self.thrift_client.Ping()
 
     def RegisterMapPair(self, pairs):
-        """
-        Parameters:
-         - pairs
-        """
-        raise NotImplemented("RegisterMapPair")
+        self.thrift_client.RegisterMapPair(pairs)
 
 
 class MasterServiceClientConnection(ClientThriftConnection):
@@ -90,7 +86,7 @@ class MasterServiceClientConnection(ClientThriftConnection):
     def registerWorker(self, worker_server_ip, worker_server_port):
         try:
             accept = self.thrift_client.RegisterWorker(socket.htonl(int(ip_address(socket.inet_aton(worker_server_ip)))) - 1 - 0xFFFFFFFF  , worker_server_port)
-            #cholerny Python - tyle kombinowania, zeby z uinta zrobic inta ....
+            #TODO cholerny Python - tyle kombinowania, zeby z uinta zrobic inta .... - mozna by to zmienic
 
             if not accept:
                 raise MasterRefuseConnection("Master refuse Thrift connection from us")

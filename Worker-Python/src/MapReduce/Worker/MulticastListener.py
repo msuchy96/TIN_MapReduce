@@ -30,7 +30,6 @@ class MulticastListener:
         self.port = my_port
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        #self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.buffer = []
         self.bindPorts()
 
@@ -59,11 +58,18 @@ class MasterMulticastListener(MulticastListener):
         self.MASTER_JOIN_COM = "HELLOWORKERS"
         self.NEW_MASTER_COM = "IAMNEWMASTER"
         self.listening_thread = None
+        self.stop_thread = False
     '''
     Po to, aby watek nasluchujacy mogl wywolac receive
     '''
     def __call__(self, *args, **kwargs):
-        while 1:
+        while not 1:
+            self.mutex.acquire()
+            must_close = self.stop_thread
+            self.mutex.release()
+            if must_close:
+                break
+
             self.receive()
 
     '''
@@ -114,3 +120,18 @@ class MasterMulticastListener(MulticastListener):
         ret = self.master_lived
         self.mutex.release() #END SK
         return ret
+
+    def resetFlags(self):
+        self.master_lived = None
+        self.new_master_adress = None
+        self.listening_thread = None
+        self.stop_thread = False
+
+    def reset(self):
+        #zamknij watek
+        self.mutex.acquire()
+        self.stop_thread = True
+        self.mutex.release()
+        self.listening_thread.join()
+        self.resetFlags()
+

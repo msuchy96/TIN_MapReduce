@@ -21,22 +21,21 @@ class ExternalProcess():
         self.is_run = False
         self.lock = threading.Lock()
         self.PROCESS_OK = 0
+        self.proc = None
 
     def __call__(self, *args, **kwargs):
-        self.lock.acquire()#SK
-        self.is_run = True
-        self.lock.release()#End SK
         try:
-            state = subprocess.run(args=["python3", self.script_path],
-                                   stdin=self.input_f, stdout=self.output_f,  universal_newlines=True)
+            self.proc = subprocess.Popen(args=["python3", self.script_path],
+                                   stdin=self.input_f, stdout=self.output_path,  universal_newlines=True)
         except Exception as e:
-            e.printStackTrace()
+            print(e)
+            print("po procesie map")
 
-        self.lock.acquire()#SK
-        self.is_run = False
-        self.lock.release()#End SK
-        if state.check_returncode() != self.PROCESS_OK:
-            raise BadExitecProcessException("ExternalProcess: Bad return of process", state)
+        self.closeFiles()
+
+        self.lock.acquire()  # SK
+        self.is_run = True
+        self.lock.release()  # End SK
 
 
     def runProcess(self):
@@ -52,18 +51,27 @@ class ExternalProcess():
     def openOutputFile(self):
         self.output_f = open(file=self.output_path, mode="w", encoding='utf8')
 
+    def closeFiles(self):
+        if self.input_f is not None:
+            self.input_f.close()
+        if self.output_f is not None:
+            self.output_f.close()
+
     def isRun(self):
         self.lock.acquire()
         ret = self.is_run
         self.lock.release()
+        return ret
 
+    def getProcRef(self):
+        return self.proc
 
 class MapProcess(ExternalProcess):
     def __init__(self,map_path , data_path, output_path):
-        ExternalProcess.__init__(self, map_path, data_path, output_path)
+        ExternalProcess.__init__(self, map_path, data_path, subprocess.PIPE)
 
 
-class ReduceProcess():
+class ReduceProcess(ExternalProcess):
     def __init__(self,reduce_path , data_path, output_path):
-        ExternalProcess.__init__(self, reduce_path, data_path, output_path)
+        ExternalProcess.__init__(self, reduce_path, data_path, subprocess.PIPE)
 
