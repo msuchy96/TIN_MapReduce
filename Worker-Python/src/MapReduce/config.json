@@ -1,0 +1,23 @@
+{  
+	"MasterConfig":{
+	  "MasterMulticastGroup":"224.0.0.124", 
+	  "MasterServerPort": 8999  
+	},
+
+	"GeneralConfiguration": {
+	  "Ip": "192.168.43.168", 
+	  "ServerPort": 10000 , 
+	  "MulticastPort": 9090 ,
+	  "LogLevel":"DEBUG" 	
+	},
+
+	"FilesystemConfig":{
+	  "FilesystemRoot":"map_reduce_sshfs/" 
+	 
+	}
+
+
+}
+
+
+
